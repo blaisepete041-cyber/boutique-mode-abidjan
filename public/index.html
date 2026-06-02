@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lumière d'Afrique — Mode & Élégance Abidjan</title>
+  <meta name="description" content="Boutique mode africaine à Abidjan. Robes wax, ensembles kente, accessoires artisanaux. Livraison Abidjan et Côte d'Ivoire.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Bandeau promotionnel -->
+  <div class="promo-banner">
+    Livraison gratuite à Abidjan pour toute commande &gt; 30 000 FCFA &nbsp;|&nbsp; Code : <strong>ABIDJAN10</strong> pour -10%
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">✦</div>
+        <div class="logo-text">
+          <h1>Lumière d'Afrique</h1>
+          <span>Abidjan · Côte d'Ivoire</span>
+        </div>
+      </div>
+
+      <nav class="desktop-nav">
+        <a href="#" onclick="filterCategory('Tous')">Toutes collections</a>
+        <a href="#" onclick="filterCategory('Nouveautés')">Nouveautés</a>
+        <a href="#" onclick="filterCategory('Robes')">Robes</a>
+        <a href="#" onclick="filterCategory('Hauts')">Hauts</a>
+        <a href="#" onclick="filterCategory('Soldes')">Soldes</a>
+      </nav>
+
+      <div class="header-actions">
+        <div class="search-bar-desktop">
+          <span>🔍</span>
+          <input type="text" id="searchDesktop" placeholder="Rechercher un article..." oninput="handleSearch(this.value)">
+        </div>
+        <button class="btn-cart" onclick="openCart()">
+          🛍️ Panier
+          <span class="cart-count" id="cartCount">0</span>
+        </button>
+        <button class="btn-hamburger" onclick="openMobileMenu()">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Menu mobile -->
+  <div class="mobile-menu" id="mobileMenu">
+    <button class="mobile-menu-close" onclick="closeMobileMenu()">✕</button>
+    <div class="mobile-search">
+      <span>🔍</span>
+      <input type="text" placeholder="Rechercher..." oninput="handleSearch(this.value); closeMobileMenu()">
+    </div>
+    <nav class="mobile-nav">
+      <a href="#" onclick="filterCategory('Tous'); closeMobileMenu()">Toutes les collections</a>
+      <a href="#" onclick="filterCategory('Nouveautés'); closeMobileMenu()">Nouveautés</a>
+      <a href="#" onclick="filterCategory('Robes'); closeMobileMenu()">Robes</a>
+      <a href="#" onclick="filterCategory('Hauts'); closeMobileMenu()">Hauts</a>
+      <a href="#" onclick="filterCategory('Pantalons'); closeMobileMenu()">Pantalons</a>
+      <a href="#" onclick="filterCategory('Accessoires'); closeMobileMenu()">Accessoires</a>
+      <a href="#" onclick="filterCategory('Soldes'); closeMobileMenu()">Soldes 🔥</a>
+    </nav>
+  </div>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-tag">Collection 2025</div>
+    <h2>Mode <em>Africaine</em><br>Élégance Moderne</h2>
+    <p>Les plus belles créations en wax, kente et bazin. Livraison dans tout Abidjan en 24h.</p>
+    <div class="hero-cta">
+      <button class="btn-primary" onclick="document.getElementById('catalogue').scrollIntoView({behavior:'smooth'})">
+        Découvrir la collection
+      </button>
+      <button class="btn-secondary" style="border-color:rgba(255,255,255,0.4);color:#fff;" onclick="filterCategory('Soldes')">
+        Voir les soldes
+      </button>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <strong>500+</strong>
+        <span>Clientes satisfaites</span>
+      </div>
+      <div class="hero-stat">
+        <strong>24h</strong>
+        <span>Livraison Abidjan</span>
+      </div>
+      <div class="hero-stat">
+        <strong>100%</strong>
+        <span>Authenticité garantie</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Catalogue -->
+  <section class="catalogue-section" id="catalogue">
+    <div class="container">
+      <div class="section-header">
+        <h2>Notre Collection</h2>
+        <p>Découvrez les pièces sélectionnées avec soin pour vous</p>
+      </div>
+
+      <!-- Filtres catégories -->
+      <div class="filters-wrapper">
+        <div class="filters-scroll" id="filtersBar">
+          <button class="filter-btn active" onclick="filterCategory('Tous')" data-cat="Tous">Toutes</button>
+          <button class="filter-btn" onclick="filterCategory('Nouveautés')" data-cat="Nouveautés">✨ Nouveautés</button>
+          <button class="filter-btn" onclick="filterCategory('Robes')" data-cat="Robes">Robes</button>
+          <button class="filter-btn" onclick="filterCategory('Hauts')" data-cat="Hauts">Hauts</button>
+          <button class="filter-btn" onclick="filterCategory('Pantalons')" data-cat="Pantalons">Pantalons</button>
+          <button class="filter-btn" onclick="filterCategory('Accessoires')" data-cat="Accessoires">Accessoires</button>
+          <button class="filter-btn" onclick="filterCategory('Soldes')" data-cat="Soldes">🔥 Soldes</button>
+        </div>
+      </div>
+
+      <!-- Barre de tri -->
+      <div class="sort-bar">
+        <span id="productsCount">Chargement...</span>
+        <select class="sort-select" id="sortSelect" onchange="handleSort(this.value)">
+          <option value="nouveautes">Nouveautés</option>
+          <option value="prix_asc">Prix croissant</option>
+          <option value="prix_desc">Prix décroissant</option>
+          <option value="popularite">Popularité</option>
+        </select>
+      </div>
+
+      <!-- Grille produits -->
+      <div class="products-grid" id="productsGrid">
+        <div class="products-loader active" id="loader">
+          <div class="spinner"></div>
+          <p>Chargement des produits...</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section valeurs -->
+  <section style="padding: 50px 0; background: var(--noir);">
+    <div class="container">
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; max-width: 700px; margin: 0 auto; text-align: center;">
+        <div style="color: white; padding: 24px;">
+          <div style="font-size: 36px; margin-bottom: 12px;">🌍</div>
+          <h4 style="font-family: 'Playfair Display', serif; margin-bottom: 8px; color: var(--or);">Artisanat authentique</h4>
+          <p style="font-size: 13px; color: rgba(255,255,255,0.6);">Tissus et confections sélectionnés auprès d'artisans africains</p>
+        </div>
+        <div style="color: white; padding: 24px;">
+          <div style="font-size: 36px; margin-bottom: 12px;">🚴</div>
+          <h4 style="font-family: 'Playfair Display', serif; margin-bottom: 8px; color: var(--or);">Livraison rapide</h4>
+          <p style="font-size: 13px; color: rgba(255,255,255,0.6);">24h à Abidjan, 3-5 jours dans toute la Côte d'Ivoire</p>
+        </div>
+        <div style="color: white; padding: 24px;">
+          <div style="font-size: 36px; margin-bottom: 12px;">💬</div>
+          <h4 style="font-family: 'Playfair Display', serif; margin-bottom: 8px; color: var(--or);">Commande WhatsApp</h4>
+          <p style="font-size: 13px; color: rgba(255,255,255,0.6);">Confirmez votre commande directement sur WhatsApp</p>
+        </div>
+        <div style="color: white; padding: 24px;">
+          <div style="font-size: 36px; margin-bottom: 12px;">↩️</div>
+          <h4 style="font-family: 'Playfair Display', serif; margin-bottom: 8px; color: var(--or);">Échanges faciles</h4>
+          <p style="font-size: 13px; color: rgba(255,255,255,0.6);">7 jours pour échanger si la taille ne convient pas</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h3>Lumière d'Afrique</h3>
+        <p>La mode africaine moderne au coeur d'Abidjan. Nous mettons en valeur le savoir-faire artisanal de notre continent à travers des créations contemporaines.</p>
+        <div class="social-links">
+          <a href="#" class="social-link">📸</a>
+          <a href="#" class="social-link">💬</a>
+          <a href="#" class="social-link">📘</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Collections</h4>
+        <ul>
+          <li><a href="#" onclick="filterCategory('Robes')">Robes</a></li>
+          <li><a href="#" onclick="filterCategory('Hauts')">Hauts & Tops</a></li>
+          <li><a href="#" onclick="filterCategory('Pantalons')">Pantalons & Jupes</a></li>
+          <li><a href="#" onclick="filterCategory('Accessoires')">Accessoires</a></li>
+          <li><a href="#" onclick="filterCategory('Soldes')">Soldes</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Informations</h4>
+        <ul>
+          <li><a href="#">À propos</a></li>
+          <li><a href="#">Livraison & retours</a></li>
+          <li><a href="#">Guide des tailles</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="#">📍 Cocody, Abidjan</a></li>
+          <li><a href="#">📞 +225 07 00 00 00 00</a></li>
+          <li><a href="#">💬 WhatsApp</a></li>
+          <li><a href="#">✉️ contact@lumiere-afrique.ci</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 Lumière d'Afrique · Abidjan, Côte d'Ivoire · Tous droits réservés</p>
+    </div>
+  </footer>
+
+  <!-- ===== MODALE PRODUIT ===== -->
+  <div class="modal-overlay" id="productModal" onclick="handleModalClick(event)">
+    <div class="modal-content" id="modalContent">
+      <button class="modal-close" onclick="closeProductModal()">✕</button>
+
+      <div class="modal-gallery" id="modalGallery">
+        <img id="modalMainImage" src="" alt="">
+      </div>
+
+      <div id="modalBody">
+        <div class="gallery-thumbnails" id="modalThumbnails"></div>
+        <div class="modal-info">
+          <p class="modal-category" id="modalCategory"></p>
+          <h2 class="modal-name" id="modalName"></h2>
+          <div class="modal-price">
+            <span class="modal-price-current" id="modalPrice"></span>
+            <span class="modal-price-original" id="modalOriginalPrice"></span>
+          </div>
+          <p class="modal-description" id="modalDescription"></p>
+
+          <p class="option-label">Taille <span id="selectedSizeLabel" style="color:var(--terracotta);font-weight:700;"></span></p>
+          <div class="size-options" id="sizeOptions"></div>
+
+          <p class="option-label">Couleur <span id="selectedColorLabel" style="color:var(--terracotta);font-weight:700;"></span></p>
+          <div class="color-options" id="colorOptions"></div>
+
+          <p class="option-label">Quantité</p>
+          <div class="quantity-selector">
+            <button class="qty-btn" onclick="changeModalQty(-1)">−</button>
+            <span class="qty-value" id="modalQty">1</span>
+            <button class="qty-btn" onclick="changeModalQty(1)">+</button>
+          </div>
+
+          <button class="btn-add-to-cart-modal" onclick="addToCartFromModal()">
+            🛍️ Ajouter au panier
+          </button>
+        </div>
+
+        <div class="similar-products" id="similarProducts">
+          <h3>Vous aimerez aussi</h3>
+          <div class="similar-grid" id="similarGrid"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PANIER DRAWER ===== -->
+  <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+  <div class="cart-drawer" id="cartDrawer">
+    <div class="cart-header">
+      <h3>Mon Panier</h3>
+      <div class="cart-header-right">
+        <span class="cart-items-count" id="cartItemsCount">0 article</span>
+        <button class="btn-close-cart" onclick="closeCart()">✕</button>
+      </div>
+    </div>
+
+    <div class="cart-items" id="cartItemsList">
+      <div class="cart-empty">
+        <div class="cart-empty-icon">🛍️</div>
+        <p>Votre panier est vide</p>
+        <p style="font-size:13px;margin-top:6px;">Découvrez nos magnifiques créations</p>
+      </div>
+    </div>
+
+    <div class="cart-summary">
+      <!-- Code promo -->
+      <div class="promo-section">
+        <input type="text" class="promo-input" id="promoInput" placeholder="CODE PROMO">
+        <button class="btn-promo" onclick="validatePromo()">Appliquer</button>
+      </div>
+      <div class="promo-feedback" id="promoFeedback"></div>
+
+      <!-- Livraison -->
+      <div class="delivery-options">
+        <label class="delivery-option selected" id="deliveryAbidjan" onclick="selectDelivery('abidjan')">
+          <input type="radio" name="delivery" checked>
+          <span class="delivery-icon">🏙️</span>
+          <div class="delivery-info">
+            <div class="delivery-name">Abidjan</div>
+            <div class="delivery-price">2 000 FCFA · Livraison 24h</div>
+          </div>
+        </label>
+        <label class="delivery-option" id="deliveryOther" onclick="selectDelivery('other')">
+          <input type="radio" name="delivery">
+          <span class="delivery-icon">📦</span>
+          <div class="delivery-info">
+            <div class="delivery-name">Hors Abidjan</div>
+            <div class="delivery-price">5 000 FCFA · 3-5 jours</div>
+          </div>
+        </label>
+      </div>
+
+      <!-- Totaux -->
+      <div class="cart-totals">
+        <div class="cart-total-row">
+          <span>Sous-total</span>
+          <span id="cartSubtotal">0 FCFA</span>
+        </div>
+        <div class="cart-total-row discount" id="discountRow" style="display:none">
+          <span>Réduction promo</span>
+          <span id="cartDiscount">−0 FCFA</span>
+        </div>
+        <div class="cart-total-row">
+          <span>Livraison</span>
+          <span id="cartDelivery">2 000 FCFA</span>
+        </div>
+        <div class="cart-total-row grand-total">
+          <span>Total</span>
+          <span id="cartTotal">2 000 FCFA</span>
+        </div>
+      </div>
+
+      <button class="btn-checkout" onclick="openCheckout()">
+        Finaliser ma commande →
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== FORMULAIRE CHECKOUT ===== -->
+  <div class="checkout-modal" id="checkoutModal">
+    <div class="checkout-sheet">
+      <div class="checkout-header">
+        <h3>Informations de livraison</h3>
+        <button onclick="closeCheckout()" style="background:none;font-size:22px;color:#888;">✕</button>
+      </div>
+
+      <form class="checkout-form" id="checkoutForm" onsubmit="submitOrder(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Prénom et Nom *</label>
+            <input type="text" id="customerName" placeholder="Ex: Aya Koné" required>
+          </div>
+          <div class="form-group">
+            <label>Téléphone WhatsApp *</label>
+            <input type="tel" id="customerPhone" placeholder="07XXXXXXXX" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Adresse de livraison *</label>
+          <input type="text" id="customerAddress" placeholder="Ex: Rue des Jardins, Villa 12" required>
+        </div>
+
+        <div class="form-group">
+          <label>Quartier *</label>
+          <select id="customerDistrict" required>
+            <option value="">Sélectionner le quartier</option>
+            <optgroup label="Abidjan">
+              <option>Cocody</option>
+              <option>Plateau</option>
+              <option>Marcory</option>
+              <option>Treichville</option>
+              <option>Adjamé</option>
+              <option>Yopougon</option>
+              <option>Koumassi</option>
+              <option>Port-Bouët</option>
+              <option>Attécoubé</option>
+              <option>Abobo</option>
+              <option>Bingerville</option>
+              <option>Anyama</option>
+            </optgroup>
+            <optgroup label="Hors Abidjan">
+              <option>Bouaké</option>
+              <option>Daloa</option>
+              <option>Yamoussoukro</option>
+              <option>San-Pédro</option>
+              <option>Korhogo</option>
+              <option>Autre ville</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <!-- Résumé commande -->
+        <div class="checkout-order-summary">
+          <h4>Récapitulatif</h4>
+          <div id="checkoutItemsList"></div>
+          <div class="checkout-total">
+            <span>Total à payer</span>
+            <span id="checkoutTotalAmount"></span>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-whatsapp">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+          </svg>
+          Commander via WhatsApp
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

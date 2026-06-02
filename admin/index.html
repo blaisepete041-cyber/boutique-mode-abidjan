@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Lumière d'Afrique</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- LOGIN PAGE -->
+  <div id="loginPage" class="login-page">
+    <div class="login-card">
+      <div class="login-logo">
+        <h1>Lumière d'Afrique</h1>
+        <p>Panneau d'administration</p>
+      </div>
+      <div class="login-error" id="loginError"></div>
+      <form class="login-form" onsubmit="doLogin(event)">
+        <div class="form-group">
+          <label>Mot de passe</label>
+          <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password" required autofocus>
+        </div>
+        <button type="submit" class="btn-login">Accéder au panel</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ADMIN APP -->
+  <div id="app">
+    <!-- Mobile header -->
+    <div class="mobile-header">
+      <h3>Admin Panel</h3>
+      <button class="btn-menu-toggle" onclick="toggleSidebar()">☰</button>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <div class="admin-layout">
+      <!-- Sidebar -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-logo">
+            <h2>Lumière d'Afrique</h2>
+            <p>Administration</p>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav">
+          <div class="nav-group">
+            <div class="nav-group-label">Principal</div>
+            <div class="nav-item active" onclick="showPage('dashboard')">
+              <span class="nav-icon">📊</span> Tableau de bord
+            </div>
+          </div>
+          <div class="nav-group">
+            <div class="nav-group-label">Gestion</div>
+            <div class="nav-item" onclick="showPage('products')">
+              <span class="nav-icon">👗</span> Produits
+            </div>
+            <div class="nav-item" onclick="showPage('orders')">
+              <span class="nav-icon">📦</span> Commandes
+            </div>
+            <div class="nav-item" onclick="showPage('promos')">
+              <span class="nav-icon">🎟️</span> Codes promo
+            </div>
+          </div>
+        </nav>
+
+        <div class="sidebar-footer">
+          <button class="btn-visit-shop" onclick="window.open('/', '_blank')">
+            🛍️ Voir la boutique
+          </button>
+          <button class="btn-logout" onclick="logout()">
+            ← Se déconnecter
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main content -->
+      <main class="main-content">
+
+        <!-- ===== DASHBOARD ===== -->
+        <section class="page-section active" id="page-dashboard">
+          <div class="page-header">
+            <div>
+              <h2>Tableau de bord</h2>
+              <p id="dashDate"></p>
+            </div>
+            <button onclick="loadDashboard()" style="padding:8px 18px;background:var(--gris-clair);border-radius:8px;font-size:13px;font-weight:600;border:none;cursor:pointer;">
+              🔄 Actualiser
+            </button>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon orange">📦</div>
+              <div class="stat-info">
+                <strong id="statOrders">—</strong>
+                <span>Commandes totales</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon gold">💰</div>
+              <div class="stat-info">
+                <strong id="statRevenue">—</strong>
+                <span>Chiffre du jour</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon blue">⏳</div>
+              <div class="stat-info">
+                <strong id="statPending">—</strong>
+                <span>En attente</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon green">👗</div>
+              <div class="stat-info">
+                <strong id="statProducts">—</strong>
+                <span>Produits actifs</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <h3>Commandes — 7 derniers jours</h3>
+            <canvas id="ordersChart" height="120"></canvas>
+          </div>
+
+          <div class="table-card">
+            <div class="table-toolbar">
+              <h3 style="font-size:16px;">Dernières commandes</h3>
+              <button class="btn-action btn-edit" onclick="showPage('orders')">Voir toutes →</button>
+            </div>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Client</th>
+                    <th>Total</th>
+                    <th>Quartier</th>
+                    <th>Statut</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody id="recentOrdersTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== PRODUITS ===== -->
+        <section class="page-section" id="page-products">
+          <div class="page-header">
+            <div>
+              <h2>Gestion des produits</h2>
+              <p>Ajouter, modifier ou supprimer des articles</p>
+            </div>
+            <button class="btn-add" onclick="openProductForm()">+ Ajouter un produit</button>
+          </div>
+
+          <div class="table-card">
+            <div class="table-toolbar">
+              <div class="toolbar-search">
+                <span>🔍</span>
+                <input type="text" placeholder="Rechercher un produit..." oninput="filterProductsTable(this.value)">
+              </div>
+              <span id="productsTableCount" style="font-size:13px;color:var(--gris);"></span>
+            </div>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Photo</th>
+                    <th>Nom</th>
+                    <th>Prix</th>
+                    <th>Catégorie</th>
+                    <th>Stock</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="productsTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== COMMANDES ===== -->
+        <section class="page-section" id="page-orders">
+          <div class="page-header">
+            <div>
+              <h2>Gestion des commandes</h2>
+              <p>Suivez et mettez à jour le statut des commandes</p>
+            </div>
+            <select id="ordersFilter" onchange="loadOrders()" style="padding:9px 14px;border-radius:8px;border:1.5px solid #DDD;font-size:13px;font-family:inherit;outline:none;">
+              <option value="">Toutes</option>
+              <option>En attente</option>
+              <option>Confirmée</option>
+              <option>Expédiée</option>
+              <option>Livrée</option>
+              <option>Annulée</option>
+            </select>
+          </div>
+
+          <div class="table-card">
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Client</th>
+                    <th>Articles</th>
+                    <th>Total</th>
+                    <th>Adresse</th>
+                    <th>Statut</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="ordersTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== CODES PROMO ===== -->
+        <section class="page-section" id="page-promos">
+          <div class="page-header">
+            <div>
+              <h2>Codes promotionnels</h2>
+              <p>Créer et gérer vos codes de réduction</p>
+            </div>
+            <button class="btn-add" onclick="openPromoForm()">+ Créer un code</button>
+          </div>
+
+          <div class="table-card">
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Code</th>
+                    <th>Type</th>
+                    <th>Valeur</th>
+                    <th>Expiration</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="promosTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ===== MODAL PRODUIT ===== -->
+  <div class="modal-backdrop" id="productModal">
+    <div class="modal-form">
+      <div class="modal-form-header">
+        <h3 id="productModalTitle">Nouveau produit</h3>
+        <button class="btn-modal-close" onclick="closeProductForm()">✕</button>
+      </div>
+      <form class="modal-form-body" id="productForm" onsubmit="saveProduct(event)">
+        <input type="hidden" id="productId">
+
+        <div class="form-group">
+          <label>Nom du produit *</label>
+          <input type="text" id="pName" required placeholder="Ex: Robe Wax Bogolan">
+        </div>
+
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="pDesc" rows="3" placeholder="Description du produit..."></textarea>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Prix (FCFA) *</label>
+            <input type="number" id="pPrice" required placeholder="Ex: 25000">
+          </div>
+          <div class="form-group">
+            <label>Prix barré (FCFA)</label>
+            <input type="number" id="pOriginalPrice" placeholder="Ex: 32000">
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Catégorie *</label>
+            <select id="pCategory" required>
+              <option value="">Sélectionner</option>
+              <option>Robes</option>
+              <option>Hauts</option>
+              <option>Pantalons</option>
+              <option>Accessoires</option>
+              <option>Nouveautés</option>
+              <option>Soldes</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Stock</label>
+            <input type="number" id="pStock" placeholder="Ex: 10" min="0">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Tailles disponibles (séparées par virgule)</label>
+          <input type="text" id="pSizes" placeholder="Ex: XS, S, M, L, XL, XXL">
+        </div>
+
+        <div class="form-group">
+          <label>Couleurs disponibles (séparées par virgule)</label>
+          <input type="text" id="pColors" placeholder="Ex: Noir/Or, Terracotta, Bleu">
+        </div>
+
+        <div class="form-group">
+          <label>URLs des images (une par ligne)</label>
+          <textarea id="pImages" rows="3" placeholder="https://images.unsplash.com/...&#10;https://images.unsplash.com/..."></textarea>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Badge</label>
+            <select id="pBadge">
+              <option value="">Aucun</option>
+              <option>Nouveauté</option>
+              <option>Promo</option>
+              <option>Bestseller</option>
+              <option>Soldes</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Statut</label>
+            <select id="pActive">
+              <option value="1">Actif (visible)</option>
+              <option value="0">Inactif (masqué)</option>
+            </select>
+          </div>
+        </div>
+      </form>
+      <div class="modal-form-footer">
+        <button class="btn-cancel" onclick="closeProductForm()">Annuler</button>
+        <button class="btn-save" onclick="document.getElementById('productForm').requestSubmit()">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MODAL CODE PROMO ===== -->
+  <div class="modal-backdrop" id="promoModal">
+    <div class="modal-form" style="max-width:440px;">
+      <div class="modal-form-header">
+        <h3>Nouveau code promo</h3>
+        <button class="btn-modal-close" onclick="closePromoForm()">✕</button>
+      </div>
+      <form class="modal-form-body" id="promoForm" onsubmit="savePromo(event)">
+        <div class="form-group">
+          <label>Code *</label>
+          <input type="text" id="promoCode" required placeholder="Ex: SOLDES20" style="text-transform:uppercase;">
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Type *</label>
+            <select id="promoType" required>
+              <option value="percentage">Pourcentage (%)</option>
+              <option value="fixed">Montant fixe (FCFA)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Valeur *</label>
+            <input type="number" id="promoValue" required placeholder="Ex: 10" min="1">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Date d'expiration (optionnel)</label>
+          <input type="date" id="promoExpiry">
+        </div>
+      </form>
+      <div class="modal-form-footer">
+        <button class="btn-cancel" onclick="closePromoForm()">Annuler</button>
+        <button class="btn-save" onclick="document.getElementById('promoForm').requestSubmit()">Créer le code</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="admin.js"></script>
+</body>
+</html>
