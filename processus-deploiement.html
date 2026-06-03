@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Processus de mise en ligne — Lumière d'Afrique</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --terracotta: #C1440E;
+      --or: #D4AF37;
+      --noir: #1A1A1A;
+      --blanc: #FFFFFF;
+      --creme: #F5F0E8;
+      --vert: #2E7D32;
+      --bleu: #1565C0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--creme);
+      color: var(--noir);
+      min-height: 100vh;
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      background: linear-gradient(160deg, var(--noir) 0%, #2D1810 100%);
+      padding: 60px 20px 50px;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(212,175,55,0.15);
+      color: var(--or);
+      border: 1px solid rgba(212,175,55,0.3);
+      padding: 6px 18px;
+      border-radius: 20px;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(28px, 6vw, 52px);
+      color: var(--blanc);
+      margin-bottom: 14px;
+      line-height: 1.2;
+    }
+
+    .hero h1 em { color: var(--or); font-style: italic; }
+
+    .hero p {
+      color: rgba(255,255,255,0.6);
+      font-size: 16px;
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* ===== CONTAINER ===== */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ===== TIMELINE ===== */
+    .timeline-section {
+      padding: 60px 0 40px;
+    }
+
+    .section-label {
+      text-align: center;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--terracotta);
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .section-title {
+      text-align: center;
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(22px, 4vw, 36px);
+      margin-bottom: 50px;
+    }
+
+    .timeline {
+      position: relative;
+      padding: 0 0 20px;
+    }
+
+    /* Ligne verticale centrale */
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--terracotta), var(--or), var(--vert));
+      transform: translateX(-50%);
+    }
+
+    .timeline-item {
+      display: flex;
+      justify-content: flex-end;
+      padding-right: calc(50% + 40px);
+      margin-bottom: 50px;
+      position: relative;
+    }
+
+    .timeline-item.right {
+      justify-content: flex-start;
+      padding-right: 0;
+      padding-left: calc(50% + 40px);
+    }
+
+    /* Point sur la ligne */
+    .timeline-dot {
+      position: absolute;
+      left: 50%;
+      top: 24px;
+      transform: translateX(-50%);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      z-index: 2;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+      border: 3px solid var(--creme);
+    }
+
+    .dot-orange { background: var(--terracotta); }
+    .dot-gold   { background: var(--or); }
+    .dot-green  { background: var(--vert); }
+    .dot-blue   { background: var(--bleu); }
+
+    /* Carte */
+    .timeline-card {
+      background: var(--blanc);
+      border-radius: 16px;
+      padding: 22px 24px;
+      width: 100%;
+      max-width: 360px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      position: relative;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .timeline-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.13);
+    }
+
+    /* Flèche pointant vers la ligne */
+    .timeline-card::after {
+      content: '';
+      position: absolute;
+      top: 30px;
+      width: 0;
+      height: 0;
+      border-top: 10px solid transparent;
+      border-bottom: 10px solid transparent;
+    }
+
+    .timeline-item .timeline-card::after {
+      right: -12px;
+      border-left: 12px solid var(--blanc);
+    }
+
+    .timeline-item.right .timeline-card::after {
+      left: -12px;
+      border-right: 12px solid var(--blanc);
+    }
+
+    .card-step {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 6px;
+    }
+
+    .step-1 { color: var(--terracotta); }
+    .step-2 { color: var(--or); }
+    .step-3 { color: var(--vert); }
+    .step-4 { color: var(--bleu); }
+
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    .card-desc {
+      font-size: 13px;
+      color: #555;
+      line-height: 1.65;
+      margin-bottom: 14px;
+    }
+
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .tag {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .tag-orange { background: rgba(193,68,14,0.1);  color: var(--terracotta); }
+    .tag-gold   { background: rgba(212,175,55,0.15); color: #8B6914; }
+    .tag-green  { background: rgba(46,125,50,0.1);   color: var(--vert); }
+    .tag-blue   { background: rgba(21,101,192,0.1);  color: var(--bleu); }
+    .tag-gray   { background: #F0EDE8; color: #666; }
+
+    .card-condition {
+      background: var(--creme);
+      border-left: 3px solid var(--or);
+      padding: 10px 14px;
+      border-radius: 0 8px 8px 0;
+      font-size: 12px;
+      color: #666;
+      font-style: italic;
+    }
+
+    .card-condition strong { color: var(--noir); font-style: normal; }
+
+    /* ===== COMPARATEUR ===== */
+    .compare-section {
+      padding: 20px 0 60px;
+    }
+
+    .compare-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .compare-card {
+      background: var(--blanc);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+    }
+
+    .compare-card.recommended {
+      border: 2px solid var(--terracotta);
+      transform: scale(1.02);
+    }
+
+    .compare-header {
+      padding: 20px;
+      text-align: center;
+      position: relative;
+    }
+
+    .compare-header.orange { background: linear-gradient(135deg, var(--terracotta), #A83509); }
+    .compare-header.gold   { background: linear-gradient(135deg, var(--or), #B8960F); }
+    .compare-header.dark   { background: linear-gradient(135deg, #2D1810, var(--noir)); }
+
+    .compare-rec-badge {
+      position: absolute;
+      top: -1px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--or);
+      color: var(--noir);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 12px;
+      border-radius: 0 0 8px 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+
+    .compare-icon { font-size: 32px; margin-bottom: 8px; display: block; }
+
+    .compare-header h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      color: var(--blanc);
+      margin-bottom: 4px;
+    }
+
+    .compare-header p {
+      font-size: 12px;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .compare-price {
+      text-align: center;
+      padding: 16px;
+      border-bottom: 1px solid #F0EDE8;
+    }
+
+    .compare-price strong {
+      font-size: 26px;
+      font-family: 'Playfair Display', serif;
+    }
+
+    .compare-price span { font-size: 12px; color: #888; }
+
+    .compare-features {
+      padding: 16px 20px;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .compare-features li {
+      font-size: 13px;
+      color: #555;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .feat-ok   { color: var(--vert); font-size: 15px; flex-shrink: 0; }
+    .feat-warn { color: var(--or);   font-size: 15px; flex-shrink: 0; }
+    .feat-no   { color: #CCC;        font-size: 15px; flex-shrink: 0; }
+
+    .compare-cta {
+      padding: 16px 20px 20px;
+    }
+
+    .btn-compare {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+      text-decoration: none;
+      transition: all 0.25s ease;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-orange { background: var(--terracotta); color: var(--blanc); }
+    .btn-orange:hover { background: #A83509; }
+    .btn-gold { background: rgba(212,175,55,0.15); color: #8B6914; border: 1.5px solid var(--or); }
+    .btn-dark { background: var(--noir); color: var(--blanc); }
+    .btn-dark:hover { background: #333; }
+
+    /* ===== ALERTE RENDER ===== */
+    .alert-box {
+      background: #FFF8E1;
+      border: 1.5px solid var(--or);
+      border-radius: 14px;
+      padding: 20px 24px;
+      margin: 0 0 40px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .alert-icon { font-size: 24px; flex-shrink: 0; }
+
+    .alert-box h4 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .alert-box p {
+      font-size: 13px;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    /* ===== FOOTER ===== */
+    .page-footer {
+      background: var(--noir);
+      color: rgba(255,255,255,0.5);
+      text-align: center;
+      padding: 30px 20px;
+      font-size: 12px;
+    }
+
+    .page-footer strong { color: var(--or); }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 700px) {
+      .timeline::before { left: 24px; }
+
+      .timeline-item,
+      .timeline-item.right {
+        justify-content: flex-start;
+        padding-left: 70px;
+        padding-right: 0;
+      }
+
+      .timeline-dot { left: 24px; }
+
+      .timeline-card { max-width: 100%; }
+
+      .timeline-item .timeline-card::after {
+        right: auto;
+        left: -12px;
+        border-left: none;
+        border-right: 12px solid var(--blanc);
+      }
+
+      .compare-grid { grid-template-columns: 1fr; }
+      .compare-card.recommended { transform: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">Guide de déploiement</div>
+    <h1>De zéro à <em>en ligne</em><br>en 3 étapes</h1>
+    <p>Le parcours recommandé pour lancer votre boutique mode à Abidjan et évoluer avec la croissance.</p>
+  </div>
+
+  <!-- TIMELINE -->
+  <section class="timeline-section">
+    <div class="container">
+      <div class="section-label">Le parcours</div>
+      <h2 class="section-title">Votre roadmap de mise en ligne</h2>
+
+      <div class="timeline">
+
+        <!-- ÉTAPE 1 -->
+        <div class="timeline-item">
+          <div class="timeline-dot dot-orange">🚀</div>
+          <div class="timeline-card">
+            <div class="card-step step-1">Étape 1 · Maintenant</div>
+            <h3 class="card-title">Render / Railway</h3>
+            <p class="card-desc">
+              Mettez votre boutique en ligne en 10 minutes. Partagez le lien sur WhatsApp et Instagram pour tester avec vos premiers clients. Aucune technique requise.
+            </p>
+            <div class="card-tags">
+              <span class="tag tag-green">✓ Gratuit / ~5$/mois</span>
+              <span class="tag tag-orange">10 min pour démarrer</span>
+              <span class="tag tag-gray">URL automatique</span>
+            </div>
+            <div class="card-condition">
+              <strong>Passez à l'étape 2 quand :</strong> vous recevez vos premières commandes régulières et voulez une adresse professionnelle.
+            </div>
+          </div>
+        </div>
+
+        <!-- ÉTAPE 2 -->
+        <div class="timeline-item right">
+          <div class="timeline-dot dot-gold">🌐</div>
+          <div class="timeline-card">
+            <div class="card-step step-2">Étape 2 · Premier mois</div>
+            <h3 class="card-title">Nom de domaine .ci</h3>
+            <p class="card-desc">
+              Achetez votre domaine ivoirien (ex: <strong>lumiere-afrique.ci</strong>) pour ~15 000 FCFA/an. Votre boutique devient <em>professionnelle</em> et mémorisable. Les clients vous font plus confiance.
+            </p>
+            <div class="card-tags">
+              <span class="tag tag-gold">~15 000 FCFA / an</span>
+              <span class="tag tag-green">✓ HTTPS inclus</span>
+              <span class="tag tag-gray">Achat sur nic.ci</span>
+            </div>
+            <div class="card-condition">
+              <strong>Passez à l'étape 3 quand :</strong> les commandes arrivent chaque jour et vous avez besoin de rapidité, fiabilité 24/7 et contrôle total.
+            </div>
+          </div>
+        </div>
+
+        <!-- ÉTAPE 3 -->
+        <div class="timeline-item">
+          <div class="timeline-dot dot-green">🏆</div>
+          <div class="timeline-card">
+            <div class="card-step step-3">Étape 3 · En croissance</div>
+            <h3 class="card-title">VPS Dédié</h3>
+            <p class="card-desc">
+              Migrez sur un serveur VPS (Hostinger, DigitalOcean) à ~2 000 FCFA/mois. Votre boutique tourne 24h/24 sans jamais se mettre en veille. Base de données permanente, sauvegardes automatiques.
+            </p>
+            <div class="card-tags">
+              <span class="tag tag-green">✓ ~2 000 FCFA / mois</span>
+              <span class="tag tag-green">✓ Toujours allumé</span>
+              <span class="tag tag-blue">Contrôle total</span>
+            </div>
+            <div class="card-condition">
+              <strong>À ce stade :</strong> votre boutique est une vraie entreprise en ligne avec une base clients fidèle.
+            </div>
+          </div>
+        </div>
+
+        <!-- ÉTAPE 4 (bonus) -->
+        <div class="timeline-item right">
+          <div class="timeline-dot dot-blue">💳</div>
+          <div class="timeline-card">
+            <div class="card-step step-4">Étape 4 · Optionnel</div>
+            <h3 class="card-title">Paiement en ligne</h3>
+            <p class="card-desc">
+              Intégrez CinetPay ou Wave pour accepter les paiements Mobile Money (Orange Money, MTN, Wave) directement sur votre boutique. Fini le "je paie à la livraison".
+            </p>
+            <div class="card-tags">
+              <span class="tag tag-orange">CinetPay</span>
+              <span class="tag tag-blue">Wave CI</span>
+              <span class="tag tag-gold">Orange Money</span>
+              <span class="tag tag-gray">MTN MoMo</span>
+            </div>
+            <div class="card-condition">
+              <strong>Recommandé quand :</strong> vous livrez hors Abidjan et ne pouvez pas vérifier le paiement en personne.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARATEUR -->
+  <section class="compare-section">
+    <div class="container">
+      <div class="section-label">Comparer</div>
+      <h2 class="section-title" style="margin-bottom:30px;">Quelle option choisir ?</h2>
+
+      <div class="alert-box">
+        <span class="alert-icon">⚠️</span>
+        <div>
+          <h4>Plan gratuit Render — ce qu'il faut savoir</h4>
+          <p>Le serveur se met en <strong>veille après 15 min</strong> d'inactivité. Le premier visiteur attend ~30 secondes. La base de données SQLite <strong>se remet à zéro</strong> à chaque redéploiement. Parfait pour tester, à remplacer dès que les commandes arrivent.</p>
+        </div>
+      </div>
+
+      <div class="compare-grid">
+
+        <!-- Render -->
+        <div class="compare-card">
+          <div class="compare-header orange">
+            <span class="compare-icon">☁️</span>
+            <h3>Render</h3>
+            <p>Pour commencer</p>
+          </div>
+          <div class="compare-price">
+            <strong>Gratuit</strong><br>
+            <span>ou $7/mois (sans veille)</span>
+          </div>
+          <ul class="compare-features">
+            <li><span class="feat-ok">✓</span> Déploiement en 5 min</li>
+            <li><span class="feat-ok">✓</span> HTTPS automatique</li>
+            <li><span class="feat-warn">⚠</span> Veille après 15 min (plan gratuit)</li>
+            <li><span class="feat-warn">⚠</span> BDD réinitialisée au redéploiement</li>
+            <li><span class="feat-no">✗</span> Pas de domaine .ci inclus</li>
+          </ul>
+          <div class="compare-cta">
+            <a href="https://render.com" target="_blank" class="btn-compare btn-orange">Déjà en ligne ✓</a>
+          </div>
+        </div>
+
+        <!-- Railway -->
+        <div class="compare-card recommended">
+          <div class="compare-header gold">
+            <span class="compare-rec-badge">Recommandé</span>
+            <span class="compare-icon">🚂</span>
+            <h3>Railway</h3>
+            <p>Le meilleur rapport qualité/prix</p>
+          </div>
+          <div class="compare-price">
+            <strong>~$5</strong><br>
+            <span>par mois (~3 000 FCFA)</span>
+          </div>
+          <ul class="compare-features">
+            <li><span class="feat-ok">✓</span> Déploiement en 5 min</li>
+            <li><span class="feat-ok">✓</span> HTTPS automatique</li>
+            <li><span class="feat-ok">✓</span> Jamais en veille</li>
+            <li><span class="feat-ok">✓</span> Volume persistant (BDD stable)</li>
+            <li><span class="feat-warn">⚠</span> Domaine .ci en option</li>
+          </ul>
+          <div class="compare-cta">
+            <a href="https://railway.app" target="_blank" class="btn-compare btn-orange">Migrer sur Railway</a>
+          </div>
+        </div>
+
+        <!-- VPS -->
+        <div class="compare-card">
+          <div class="compare-header dark">
+            <span class="compare-icon">🖥️</span>
+            <h3>VPS Hostinger</h3>
+            <p>Production sérieuse</p>
+          </div>
+          <div class="compare-price">
+            <strong>~$3</strong><br>
+            <span>par mois (~1 800 FCFA)</span>
+          </div>
+          <ul class="compare-features">
+            <li><span class="feat-ok">✓</span> Contrôle total</li>
+            <li><span class="feat-ok">✓</span> Toujours allumé</li>
+            <li><span class="feat-ok">✓</span> BDD permanente</li>
+            <li><span class="feat-ok">✓</span> Domaine .ci possible</li>
+            <li><span class="feat-warn">⚠</span> Nécessite un peu de technique</li>
+          </ul>
+          <div class="compare-cta">
+            <a href="https://hostinger.com" target="_blank" class="btn-compare btn-dark">Voir Hostinger</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="page-footer">
+    <p>Guide créé pour <strong>Lumière d'Afrique</strong> · Abidjan, Côte d'Ivoire</p>
+    <p style="margin-top:6px;">Boutique en ligne : <strong>boutique-mode-abidjan-1.onrender.com</strong></p>
+  </footer>
+
+</body>
+</html>

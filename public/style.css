@@ -1,13 +1,13 @@
-/* ===== VARIABLES & RESET ===== */
+﻿/* ===== VARIABLES & RESET ===== */
 :root {
-  --terracotta: #C1440E;
+  --terracotta: #6B21A8;
   --or: #D4AF37;
-  --creme: #F5F0E8;
+  --creme: #FAF5FF;
   --noir: #1A1A1A;
   --blanc: #FFFFFF;
-  --gris-clair: #F8F6F2;
+  --gris-clair: #F3F0FA;
   --gris: #888;
-  --bordeaux: #6B1F2E;
+  --bordeaux: #4C1D95;
   --ombre: 0 4px 20px rgba(0,0,0,0.12);
   --ombre-forte: 0 8px 40px rgba(0,0,0,0.2);
   --rayon: 12px;
@@ -75,9 +75,9 @@ a {
 }
 
 .btn-primary:hover {
-  background: #a83509;
+  background: #581C87;
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(193, 68, 14, 0.35);
+  box-shadow: 0 6px 20px rgba(107, 33, 168, 0.35);
 }
 
 .btn-secondary {
@@ -228,7 +228,7 @@ nav.desktop-nav a:hover {
   transition: var(--transition);
 }
 
-.btn-cart:hover { background: #a83509; }
+.btn-cart:hover { background: #581C87; }
 
 .cart-count {
   background: var(--or);
@@ -312,7 +312,7 @@ nav.desktop-nav a:hover {
 
 /* ===== HERO ===== */
 .hero {
-  background: linear-gradient(160deg, var(--noir) 0%, #2D1810 50%, #1A0E08 100%);
+  background: linear-gradient(160deg, var(--noir) 0%, #2D0B5E 50%, #1A0836 100%);
   padding: 70px 16px 60px;
   text-align: center;
   position: relative;
@@ -337,7 +337,7 @@ nav.desktop-nav a:hover {
   right: -10%;
   width: 400px;
   height: 400px;
-  background: radial-gradient(circle, rgba(193,68,14,0.12) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(107, 33, 168, 0.12) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -895,9 +895,9 @@ nav.desktop-nav a:hover {
 }
 
 .btn-add-to-cart-modal:hover {
-  background: #a83509;
+  background: #581C87;
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(193,68,14,0.35);
+  box-shadow: 0 6px 20px rgba(107, 33, 168, 0.35);
 }
 
 .similar-products {
@@ -1158,7 +1158,7 @@ nav.desktop-nav a:hover {
 }
 
 .delivery-option:hover { border-color: var(--or); }
-.delivery-option.selected { border-color: var(--terracotta); background: rgba(193,68,14,0.05); }
+.delivery-option.selected { border-color: var(--terracotta); background: rgba(107, 33, 168, 0.05); }
 
 .delivery-option input { display: none; }
 
@@ -1206,7 +1206,7 @@ nav.desktop-nav a:hover {
 .btn-checkout {
   width: 100%;
   padding: 16px;
-  background: linear-gradient(135deg, var(--terracotta), #A83509);
+  background: linear-gradient(135deg, var(--terracotta), #581C87);
   color: var(--blanc);
   border-radius: 12px;
   font-size: 15px;
@@ -1221,7 +1221,7 @@ nav.desktop-nav a:hover {
 
 .btn-checkout:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(193,68,14,0.4);
+  box-shadow: 0 6px 20px rgba(107, 33, 168, 0.4);
 }
 
 /* ===== FORMULAIRE CHECKOUT ===== */
@@ -1297,7 +1297,7 @@ nav.desktop-nav a:hover {
 .form-group select:focus,
 .form-group textarea:focus {
   border-color: var(--terracotta);
-  box-shadow: 0 0 0 3px rgba(193,68,14,0.1);
+  box-shadow: 0 0 0 3px rgba(107, 33, 168, 0.1);
 }
 
 .form-row {
@@ -1336,6 +1336,75 @@ nav.desktop-nav a:hover {
   font-weight: 700;
   margin-top: 10px;
   color: var(--terracotta);
+}
+
+/* ===== PAIEMENT MOBILE MONEY ===== */
+.payment-section { margin-top: 18px; }
+
+.payment-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--noir);
+  margin-bottom: 10px;
+}
+
+.payment-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.payment-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 8px;
+  border-radius: 12px;
+  border: 2px solid #E5E0F0;
+  cursor: pointer;
+  transition: var(--transition);
+  background: var(--blanc);
+}
+
+.payment-option:hover { border-color: var(--terracotta); }
+.payment-option.selected { border-color: var(--terracotta); background: rgba(107,33,168,0.05); }
+.payment-option input { display: none; }
+
+.payment-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 900;
+  color: white;
+  letter-spacing: 0.5px;
+}
+
+.wave-logo   { background: linear-gradient(135deg, #1A73E8, #0D47A1); font-size: 11px; }
+.orange-logo { background: linear-gradient(135deg, #FF6600, #E55500); }
+.mtn-logo    { background: linear-gradient(135deg, #FFCC00, #FFB300); color: #1A1A1A; }
+.cash-logo   { background: linear-gradient(135deg, #2E7D32, #1B5E20); font-size: 20px; }
+
+.payment-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--noir);
+  text-align: center;
+}
+
+.payment-instruction {
+  font-size: 12px;
+  color: #666;
+  background: #F3F0FA;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border-left: 3px solid var(--terracotta);
+  line-height: 1.5;
 }
 
 .btn-whatsapp {

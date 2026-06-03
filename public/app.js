@@ -14,6 +14,21 @@ let currentProduct = null;
 let selectedSize = '';
 let selectedColor = '';
 let modalQty = 1;
+let selectedPayment = 'wave';
+
+const PAYMENT_LABELS = {
+  wave:      'Wave CI',
+  orange:    'Orange Money',
+  mtn:       'MTN MoMo',
+  livraison: 'Paiement à la livraison'
+};
+
+const PAYMENT_INSTRUCTIONS = {
+  wave:      'Vous recevrez un lien Wave pour payer avant la livraison.',
+  orange:    'Nous vous enverrons le numéro Orange Money pour le transfert.',
+  mtn:       'Nous vous enverrons le numéro MTN MoMo pour le transfert.',
+  livraison: 'Vous payez en cash au moment de la livraison.'
+};
 
 // ===== FORMAT PRIX FCFA =====
 function formatPrice(amount) {
@@ -640,9 +655,21 @@ function buildWhatsAppMessage(name, phone, address, district, items, subtotal, d
   lines.push('*Livraison :* ' + nf(deliveryFee) + ' FCFA');
   lines.push('*TOTAL À PAYER :* ' + nf(total) + ' FCFA');
   lines.push('');
+  lines.push('*Mode de paiement :* ' + (PAYMENT_LABELS[selectedPayment] || selectedPayment));
+  lines.push('');
   lines.push('Merci de confirmer ma commande. 🙏');
 
   return lines.join('\n');
+}
+
+// ===== PAIEMENT MOBILE MONEY =====
+function selectPayment(type) {
+  selectedPayment = type;
+  document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('selected'));
+  const clicked = document.querySelector(`.payment-option input[value="${type}"]`);
+  if (clicked) clicked.closest('.payment-option').classList.add('selected');
+  const instr = document.getElementById('paymentInstruction');
+  if (instr) instr.textContent = PAYMENT_INSTRUCTIONS[type] || '';
 }
 
 // ===== WISHLIST =====

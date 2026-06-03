@@ -1,6 +1,6 @@
-/* ===== ADMIN PANEL CSS ===== */
+﻿/* ===== ADMIN PANEL CSS ===== */
 :root {
-  --terracotta: #C1440E;
+  --terracotta: #6B21A8;
   --or: #D4AF37;
   --creme: #F5F0E8;
   --noir: #1A1A1A;
@@ -26,7 +26,7 @@ input, select, textarea { font-family: inherit; }
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(160deg, var(--noir) 0%, #2D1810 100%);
+  background: linear-gradient(160deg, var(--noir) 0%, #2D0B5E 100%);
   padding: 20px;
 }
 
@@ -59,7 +59,7 @@ input, select, textarea { font-family: inherit; }
   outline: none;
   transition: var(--transition);
 }
-.form-group input:focus { border-color: var(--terracotta); box-shadow: 0 0 0 3px rgba(193,68,14,0.1); }
+.form-group input:focus { border-color: var(--terracotta); box-shadow: 0 0 0 3px rgba(107, 33, 168, 0.1); }
 
 .btn-login {
   width: 100%;
@@ -72,7 +72,7 @@ input, select, textarea { font-family: inherit; }
   margin-top: 8px;
   transition: var(--transition);
 }
-.btn-login:hover { background: #a83509; }
+.btn-login:hover { background: #581C87; }
 
 .login-error {
   background: #FFEBEE;
@@ -244,7 +244,7 @@ input, select, textarea { font-family: inherit; }
   flex-shrink: 0;
 }
 
-.stat-icon.orange { background: rgba(193,68,14,0.12); }
+.stat-icon.orange { background: rgba(107, 33, 168, 0.12); }
 .stat-icon.gold { background: rgba(212,175,55,0.15); }
 .stat-icon.green { background: rgba(46,125,50,0.12); }
 .stat-icon.blue { background: rgba(25,118,210,0.12); }
@@ -331,7 +331,7 @@ input, select, textarea { font-family: inherit; }
   font-weight: 600;
   transition: var(--transition);
 }
-.btn-add:hover { background: #a83509; }
+.btn-add:hover { background: #581C87; }
 
 .table-wrapper { overflow-x: auto; }
 
@@ -514,7 +514,7 @@ tr:hover td { background: rgba(245,240,232,0.4); }
 .modal-form-body select:focus,
 .modal-form-body textarea:focus {
   border-color: var(--terracotta);
-  box-shadow: 0 0 0 3px rgba(193,68,14,0.1);
+  box-shadow: 0 0 0 3px rgba(107, 33, 168, 0.1);
 }
 
 .modal-form-body textarea { resize: vertical; min-height: 80px; }
@@ -548,7 +548,7 @@ tr:hover td { background: rgba(245,240,232,0.4); }
   font-weight: 700;
   transition: var(--transition);
 }
-.btn-save:hover { background: #a83509; }
+.btn-save:hover { background: #581C87; }
 
 /* ===== STATUS SELECTOR ===== */
 .status-select {
@@ -658,7 +658,7 @@ tr:hover td { background: rgba(245,240,232,0.4); }
 .upload-zone:hover,
 .upload-zone.dragover {
   border-color: var(--terracotta);
-  background: rgba(193,68,14,0.04);
+  background: rgba(107, 33, 168, 0.12);
 }
 
 .upload-icon { font-size: 32px; display: block; margin-bottom: 8px; }
