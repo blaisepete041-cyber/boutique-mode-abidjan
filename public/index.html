@@ -191,26 +191,37 @@
       <div class="footer-col">
         <h4>Informations</h4>
         <ul>
-          <li><a href="#">À propos</a></li>
-          <li><a href="#">Livraison & retours</a></li>
-          <li><a href="#">Guide des tailles</a></li>
-          <li><a href="#">Contact</a></li>
+          <li><a href="#" onclick="openInfoModal('apropos'); return false;">À propos</a></li>
+          <li><a href="#" onclick="openInfoModal('livraison'); return false;">Livraison &amp; retours</a></li>
+          <li><a href="#" onclick="openInfoModal('tailles'); return false;">Guide des tailles</a></li>
+          <li><a href="#" onclick="openInfoModal('contact'); return false;">Contact</a></li>
         </ul>
       </div>
       <div class="footer-col">
         <h4>Contact</h4>
         <ul>
-          <li><a href="#">📍 Cocody, Abidjan</a></li>
-          <li><a href="#">📞 +225 07 00 00 00 00</a></li>
-          <li><a href="#">💬 WhatsApp</a></li>
-          <li><a href="#">✉️ contact@lumiere-afrique.ci</a></li>
+          <li><a href="#" onclick="openInfoModal('contact'); return false;">📍 Port-Bouët, Abidjan</a></li>
+          <li><a href="tel:+2250102004878">📞 +225 01 02 00 48 78</a></li>
+          <li><a href="https://wa.me/2250102004878" target="_blank">💬 WhatsApp</a></li>
+          <li><a href="mailto:contact@lumiere-afrique.ci">✉️ contact@lumiere-afrique.ci</a></li>
         </ul>
       </div>
     </div>
     <div class="footer-bottom">
-      <p>© 2025 Lumière d'Afrique · Abidjan, Côte d'Ivoire · Tous droits réservés</p>
+      <p>© 2025 Lumière d'Afrique · Port-Bouët, Abidjan · Tous droits réservés</p>
     </div>
   </footer>
+
+  <!-- ===== MODALES INFORMATIONS ===== -->
+  <div class="modal-overlay" id="infoModal" onclick="if(event.target===this) closeInfoModal()" style="display:none; align-items:flex-start; justify-content:center; padding:20px 16px;">
+    <div class="info-modal-content">
+      <div class="info-modal-header">
+        <h2 id="infoModalTitle"></h2>
+        <button onclick="closeInfoModal()" class="modal-close" style="position:static;">✕</button>
+      </div>
+      <div id="infoModalBody"></div>
+    </div>
+  </div>
 
   <!-- ===== MODALE PRODUIT ===== -->
   <div class="modal-overlay" id="productModal" onclick="handleModalClick(event)">

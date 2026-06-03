@@ -662,6 +662,201 @@ function buildWhatsAppMessage(name, phone, address, district, items, subtotal, d
   return lines.join('\n');
 }
 
+// ===== MODALES INFORMATIONS =====
+const INFO_CONTENT = {
+
+  apropos: {
+    title: 'À propos de Lumière d\'Afrique',
+    html: `
+      <div class="info-body">
+        <div class="info-section">
+          <h3>🌍 Notre histoire</h3>
+          <p>Lumière d'Afrique est une boutique mode africaine basée à Port-Bouët, Abidjan. Nous célébrons la beauté et le savoir-faire artisanal de l'Afrique à travers des créations modernes et élégantes.</p>
+        </div>
+        <div class="info-section">
+          <h3>✨ Notre mission</h3>
+          <p>Proposer des vêtements et accessoires de qualité — robes wax, ensembles kente, hauts brodés — qui allient tradition africaine et style contemporain, à des prix accessibles pour toutes les femmes d'Abidjan et de Côte d'Ivoire.</p>
+        </div>
+        <div class="info-section">
+          <h3>🤝 Nos engagements</h3>
+          <ul>
+            <li>Tissus authentiques sélectionnés auprès d'artisans africains</li>
+            <li>Qualité vérifiée sur chaque pièce avant expédition</li>
+            <li>Livraison rapide à Abidjan et dans toute la Côte d'Ivoire</li>
+            <li>Service client disponible 7j/7 sur WhatsApp</li>
+            <li>Échanges possibles sous 7 jours si la taille ne convient pas</li>
+          </ul>
+        </div>
+        <div class="info-section">
+          <h3>📍 Nous trouver</h3>
+          <p>Port-Bouët, Abidjan, Côte d'Ivoire.<br>Commandes et renseignements sur WhatsApp : <strong>+225 01 02 00 48 78</strong></p>
+        </div>
+      </div>`
+  },
+
+  livraison: {
+    title: 'Livraison & Retours',
+    html: `
+      <div class="info-body">
+        <div class="info-section">
+          <h3>🚴 Livraison à Abidjan</h3>
+          <ul>
+            <li>Frais de livraison : <strong>2 000 FCFA</strong></li>
+            <li>Délai : <strong>24 à 48h</strong> après confirmation</li>
+            <li>Zones couvertes : tous les quartiers d'Abidjan</li>
+            <li>Livraison directement à votre adresse</li>
+          </ul>
+        </div>
+        <div class="info-section">
+          <h3>📦 Livraison hors Abidjan</h3>
+          <ul>
+            <li>Frais de livraison : <strong>5 000 FCFA</strong></li>
+            <li>Délai : <strong>3 à 5 jours ouvrables</strong></li>
+            <li>Transport via agences de voyage ou transporteurs</li>
+            <li>Villes : Bouaké, Daloa, Yamoussoukro, San-Pédro, Korhogo…</li>
+          </ul>
+        </div>
+        <div class="info-section">
+          <h3>💳 Modes de paiement acceptés</h3>
+          <ul>
+            <li>Wave CI</li>
+            <li>Orange Money</li>
+            <li>MTN MoMo</li>
+            <li>Paiement à la livraison (Abidjan uniquement)</li>
+          </ul>
+        </div>
+        <div class="info-section">
+          <h3>↩️ Échanges & retours</h3>
+          <ul>
+            <li>Échange possible sous <strong>7 jours</strong> après réception</li>
+            <li>Article non porté, étiquette intacte</li>
+            <li>Contacter le service client sur WhatsApp pour initier l'échange</li>
+            <li>Les frais de retour sont à la charge du client</li>
+          </ul>
+        </div>
+        <div class="info-section">
+          <h3>⚠️ Articles non échangeables</h3>
+          <ul>
+            <li>Articles en promotion (soldes)</li>
+            <li>Accessoires (sacs, colliers, bijoux)</li>
+            <li>Articles portés ou lavés</li>
+          </ul>
+        </div>
+      </div>`
+  },
+
+  tailles: {
+    title: 'Guide des tailles',
+    html: `
+      <div class="info-body">
+        <div class="info-section">
+          <h3>📏 Comment prendre ses mesures</h3>
+          <p>Mesurez avec un mètre ruban souple. Pour la poitrine et les hanches, mesurez la partie la plus large. Pour la taille, mesurez la partie la plus étroite du buste.</p>
+        </div>
+        <div class="info-section">
+          <h3>👗 Tableau des tailles — Vêtements</h3>
+          <div style="overflow-x:auto;">
+            <table class="size-table">
+              <thead>
+                <tr>
+                  <th>Taille</th>
+                  <th>Poitrine (cm)</th>
+                  <th>Taille (cm)</th>
+                  <th>Hanches (cm)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>XS</strong></td><td>80 – 83</td><td>60 – 63</td><td>86 – 89</td></tr>
+                <tr><td><strong>S</strong></td><td>84 – 87</td><td>64 – 67</td><td>90 – 93</td></tr>
+                <tr><td><strong>M</strong></td><td>88 – 91</td><td>68 – 71</td><td>94 – 97</td></tr>
+                <tr><td><strong>L</strong></td><td>92 – 96</td><td>72 – 76</td><td>98 – 102</td></tr>
+                <tr><td><strong>XL</strong></td><td>97 – 102</td><td>77 – 82</td><td>103 – 108</td></tr>
+                <tr><td><strong>XXL</strong></td><td>103 – 110</td><td>83 – 90</td><td>109 – 116</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="info-section">
+          <h3>💡 Conseils</h3>
+          <ul>
+            <li>En cas de doute entre deux tailles, prenez la plus grande</li>
+            <li>Les robes et ensembles wax ont une coupe ajustée — référez-vous au tableau</li>
+            <li>Contactez-nous sur WhatsApp pour un conseil personnalisé</li>
+          </ul>
+        </div>
+      </div>`
+  },
+
+  contact: {
+    title: 'Nous contacter',
+    html: `
+      <div class="info-body">
+        <div class="info-section">
+          <h3>💬 Service client</h3>
+          <p style="margin-bottom:16px;">Disponible 7j/7 de 8h à 20h. Réponse garantie sous 2 heures.</p>
+
+          <a href="https://wa.me/2250102004878" target="_blank" class="contact-card">
+            <div class="contact-card-icon cc-whatsapp">💬</div>
+            <div class="contact-card-info">
+              <strong>WhatsApp</strong>
+              <span>+225 01 02 00 48 78 · Réponse rapide</span>
+            </div>
+          </a>
+
+          <a href="tel:+2250102004878" class="contact-card">
+            <div class="contact-card-icon cc-phone">📞</div>
+            <div class="contact-card-info">
+              <strong>Appel téléphonique</strong>
+              <span>+225 01 02 00 48 78</span>
+            </div>
+          </a>
+
+          <a href="mailto:contact@lumiere-afrique.ci" class="contact-card">
+            <div class="contact-card-icon cc-email">✉️</div>
+            <div class="contact-card-info">
+              <strong>Email</strong>
+              <span>contact@lumiere-afrique.ci</span>
+            </div>
+          </a>
+
+          <div class="contact-card" style="cursor:default;">
+            <div class="contact-card-icon cc-location">📍</div>
+            <div class="contact-card-info">
+              <strong>Localisation</strong>
+              <span>Port-Bouët, Abidjan, Côte d'Ivoire</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-section">
+          <h3>⏰ Horaires</h3>
+          <ul>
+            <li>Lundi – Vendredi : 8h00 – 20h00</li>
+            <li>Samedi : 9h00 – 18h00</li>
+            <li>Dimanche : 10h00 – 16h00</li>
+          </ul>
+        </div>
+      </div>`
+  }
+};
+
+function openInfoModal(page) {
+  const content = INFO_CONTENT[page];
+  if (!content) return;
+
+  document.getElementById('infoModalTitle').textContent = content.title;
+  document.getElementById('infoModalBody').innerHTML = content.html;
+
+  const modal = document.getElementById('infoModal');
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeInfoModal() {
+  document.getElementById('infoModal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
 // ===== PAIEMENT MOBILE MONEY =====
 function selectPayment(type) {
   selectedPayment = type;
@@ -754,6 +949,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       closeCart();
       closeCheckout();
       closeMobileMenu();
+      closeInfoModal();
     }
   });
 });

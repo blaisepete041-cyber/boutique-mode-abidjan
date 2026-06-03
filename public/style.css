@@ -1338,6 +1338,126 @@ nav.desktop-nav a:hover {
   color: var(--terracotta);
 }
 
+/* ===== MODALES INFORMATIONS ===== */
+.info-modal-content {
+  background: var(--blanc);
+  border-radius: var(--rayon-large);
+  width: 100%;
+  max-width: 680px;
+  max-height: 88vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease;
+}
+
+.info-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 24px 18px;
+  border-bottom: 1px solid #EEE;
+  position: sticky;
+  top: 0;
+  background: var(--blanc);
+  z-index: 1;
+}
+
+.info-modal-header h2 { font-size: 22px; }
+
+.info-body { padding: 24px; }
+
+.info-section { margin-bottom: 28px; }
+
+.info-section h3 {
+  font-size: 16px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  color: var(--terracotta);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.info-section p, .info-section li {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.75;
+}
+
+.info-section ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.info-section ul li::before {
+  content: '✓ ';
+  color: var(--terracotta);
+  font-weight: 700;
+}
+
+/* Tableau tailles */
+.size-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+.size-table th {
+  background: var(--terracotta);
+  color: white;
+  padding: 10px 12px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.size-table td {
+  padding: 9px 12px;
+  text-align: center;
+  border-bottom: 1px solid #F0EDE8;
+}
+
+.size-table tr:nth-child(even) td { background: var(--creme); }
+.size-table tr:hover td { background: rgba(107,33,168,0.05); }
+
+/* Carte contact */
+.contact-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  background: var(--creme);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  text-decoration: none;
+  color: var(--noir);
+  transition: var(--transition);
+  border: 1.5px solid transparent;
+}
+
+.contact-card:hover { border-color: var(--terracotta); background: rgba(107,33,168,0.05); }
+
+.contact-card-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.cc-whatsapp { background: #E8F5E9; }
+.cc-phone    { background: #E3F2FD; }
+.cc-email    { background: rgba(107,33,168,0.1); }
+.cc-location { background: #FFF3E0; }
+
+.contact-card-info strong { display: block; font-size: 14px; font-weight: 700; }
+.contact-card-info span   { font-size: 12px; color: var(--gris); }
+
 /* ===== PAIEMENT MOBILE MONEY ===== */
 .payment-section { margin-top: 18px; }
 
