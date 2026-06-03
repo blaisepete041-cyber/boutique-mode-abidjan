@@ -322,9 +322,28 @@
           <input type="text" id="pColors" placeholder="Ex: Noir/Or, Terracotta, Bleu">
         </div>
 
+        <!-- Upload images -->
         <div class="form-group">
-          <label>URLs des images (une par ligne)</label>
-          <textarea id="pImages" rows="3" placeholder="https://images.unsplash.com/...&#10;https://images.unsplash.com/..."></textarea>
+          <label>Photos du produit <span style="color:#888;font-weight:400;">(3 max · JPG/PNG · auto-compressées)</span></label>
+
+          <!-- Zone de dépôt -->
+          <div class="upload-zone" id="uploadZone" onclick="document.getElementById('pImagesFile').click()">
+            <div class="upload-zone-inner">
+              <span class="upload-icon">📷</span>
+              <p class="upload-text">Cliquez ou glissez vos photos ici</p>
+              <p class="upload-hint">JPG, PNG, WEBP · Max 10 MB par image</p>
+            </div>
+            <input type="file" id="pImagesFile" accept="image/*" multiple style="display:none" onchange="handleImageFiles(this.files)">
+          </div>
+
+          <!-- Prévisualisation -->
+          <div class="images-preview" id="imagesPreview"></div>
+
+          <!-- Fallback URL manuelle -->
+          <details style="margin-top:10px;">
+            <summary style="font-size:12px;color:#888;cursor:pointer;">Ou coller des URLs d'images</summary>
+            <textarea id="pImagesUrl" rows="2" style="width:100%;margin-top:8px;padding:10px;border:1.5px solid #DDD;border-radius:8px;font-size:13px;font-family:inherit;outline:none;resize:vertical;" placeholder="https://images.unsplash.com/..."></textarea>
+          </details>
         </div>
 
         <div class="form-row-2">

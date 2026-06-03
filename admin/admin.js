@@ -278,10 +278,154 @@ function filterProductsTable(query) {
   renderProductsTable(filtered);
 }
 
-// Formulaire produit
+// ===== UPLOAD & COMPRESSION D'IMAGES =====
+
+// Tableau des images en cours (base64 ou URL)
+let currentImages = [];
+
+// Compresser une image via Canvas — max 900px, qualité 0.82
+function compressImage(file) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const MAX = 900;
+        let { width, height } = img;
+
+        if (width > MAX || height > MAX) {
+          if (width > height) { height = Math.round(height * MAX / width); width = MAX; }
+          else { width = Math.round(width * MAX / height); height = MAX; }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width  = width;
+        canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', 0.82));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function handleImageFiles(files) {
+  const remaining = 3 - currentImages.length;
+  if (remaining <= 0) {
+    showToast('Maximum 3 photos par produit', 'error');
+    return;
+  }
+
+  const toProcess = Array.from(files).slice(0, remaining);
+
+  // Afficher les placeholders de chargement
+  toProcess.forEach(() => addLoadingPlaceholder());
+
+  for (const file of toProcess) {
+    if (!file.type.startsWith('image/')) continue;
+    if (file.size > 10 * 1024 * 1024) {
+      showToast(file.name + ' est trop lourd (max 10 MB)', 'error');
+      removeLoadingPlaceholder();
+      continue;
+    }
+
+    try {
+      const base64 = await compressImage(file);
+      removeLoadingPlaceholder();
+      currentImages.push(base64);
+      renderImagePreviews();
+    } catch {
+      removeLoadingPlaceholder();
+      showToast('Erreur lors du traitement de ' + file.name, 'error');
+    }
+  }
+
+  // Réinitialiser l'input pour permettre de re-sélectionner le même fichier
+  document.getElementById('pImagesFile').value = '';
+}
+
+function addLoadingPlaceholder() {
+  const preview = document.getElementById('imagesPreview');
+  const div = document.createElement('div');
+  div.className = 'preview-loading';
+  div.innerHTML = '<div class="spinner" style="width:24px;height:24px;border-width:2px;"></div><span>Compression…</span>';
+  preview.appendChild(div);
+}
+
+function removeLoadingPlaceholder() {
+  const ph = document.getElementById('imagesPreview').querySelector('.preview-loading');
+  if (ph) ph.remove();
+}
+
+function renderImagePreviews() {
+  const container = document.getElementById('imagesPreview');
+  // Garder les placeholders de chargement
+  const loaders = container.querySelectorAll('.preview-loading');
+
+  // Supprimer uniquement les preview-item
+  container.querySelectorAll('.preview-item').forEach(el => el.remove());
+
+  currentImages.forEach((src, index) => {
+    const div = document.createElement('div');
+    div.className = 'preview-item';
+    div.innerHTML = `
+      <img src="${src}" alt="Photo ${index + 1}">
+      ${index === 0 ? '<span class="preview-main-badge">Principale</span>' : ''}
+      <button type="button" class="preview-remove" onclick="removeImage(${index})" title="Supprimer">✕</button>
+    `;
+    // Insérer avant les loaders
+    if (loaders.length > 0) {
+      container.insertBefore(div, loaders[0]);
+    } else {
+      container.appendChild(div);
+    }
+  });
+
+  // Mettre à jour le compteur sur la zone
+  const uploadZone = document.getElementById('uploadZone');
+  const hint = uploadZone.querySelector('.upload-hint');
+  const remaining = 3 - currentImages.length;
+  hint.textContent = remaining > 0
+    ? `${currentImages.length}/3 photo(s) · Encore ${remaining} possible${remaining > 1 ? 's' : ''}`
+    : '3/3 photos · Maximum atteint';
+}
+
+function removeImage(index) {
+  currentImages.splice(index, 1);
+  renderImagePreviews();
+}
+
+// Drag & Drop sur la zone d'upload
+function initUploadZone() {
+  const zone = document.getElementById('uploadZone');
+  if (!zone) return;
+
+  zone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    zone.classList.add('dragover');
+  });
+
+  zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+
+  zone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    zone.classList.remove('dragover');
+    if (e.dataTransfer.files.length) handleImageFiles(e.dataTransfer.files);
+  });
+}
+
+// ===== FORMULAIRE PRODUIT =====
 function openProductForm(productId) {
   document.getElementById('productForm').reset();
   document.getElementById('productId').value = '';
+  currentImages = [];
+  document.getElementById('imagesPreview').innerHTML = '';
+  if (document.getElementById('pImagesUrl')) document.getElementById('pImagesUrl').value = '';
+
+  // Réinitialiser le hint de la zone
+  const hint = document.querySelector('#uploadZone .upload-hint');
+  if (hint) hint.textContent = 'JPG, PNG, WEBP · Max 10 MB par image';
 
   if (productId) {
     const p = allAdminProducts.find(x => x.id === productId);
@@ -296,13 +440,17 @@ function openProductForm(productId) {
     document.getElementById('pStock').value = p.stock;
     document.getElementById('pSizes').value = (p.sizes || []).join(', ');
     document.getElementById('pColors').value = (p.colors || []).join(', ');
-    document.getElementById('pImages').value = (p.images || []).join('\n');
     document.getElementById('pBadge').value = p.badge || '';
     document.getElementById('pActive').value = p.active ? '1' : '0';
+
+    // Charger les images existantes
+    currentImages = [...(p.images || [])];
+    renderImagePreviews();
   } else {
     document.getElementById('productModalTitle').textContent = 'Nouveau produit';
   }
 
+  initUploadZone();
   document.getElementById('productModal').classList.add('open');
 }
 
@@ -314,26 +462,41 @@ async function saveProduct(e) {
   e.preventDefault();
   const id = document.getElementById('productId').value;
 
-  const sizes = document.getElementById('pSizes').value.split(',').map(s => s.trim()).filter(Boolean);
+  const sizes  = document.getElementById('pSizes').value.split(',').map(s => s.trim()).filter(Boolean);
   const colors = document.getElementById('pColors').value.split(',').map(c => c.trim()).filter(Boolean);
-  const images = document.getElementById('pImages').value.split('\n').map(i => i.trim()).filter(Boolean);
+
+  // Fusionner : images uploadées + URLs manuelles
+  const urlField = document.getElementById('pImagesUrl');
+  const urlImages = urlField && urlField.value.trim()
+    ? urlField.value.split('\n').map(u => u.trim()).filter(Boolean)
+    : [];
+  const images = [...currentImages, ...urlImages];
+
+  if (images.length === 0) {
+    showToast('Ajoutez au moins une photo', 'error');
+    return;
+  }
 
   const payload = {
-    name: document.getElementById('pName').value.trim(),
-    description: document.getElementById('pDesc').value.trim(),
-    price: parseInt(document.getElementById('pPrice').value),
-    original_price: document.getElementById('pOriginalPrice').value ? parseInt(document.getElementById('pOriginalPrice').value) : null,
-    category: document.getElementById('pCategory').value,
+    name:           document.getElementById('pName').value.trim(),
+    description:    document.getElementById('pDesc').value.trim(),
+    price:          parseInt(document.getElementById('pPrice').value),
+    original_price: document.getElementById('pOriginalPrice').value
+                      ? parseInt(document.getElementById('pOriginalPrice').value) : null,
+    category:       document.getElementById('pCategory').value,
     sizes,
     colors,
     images,
-    stock: parseInt(document.getElementById('pStock').value) || 0,
-    active: document.getElementById('pActive').value === '1',
-    badge: document.getElementById('pBadge').value || null
+    stock:          parseInt(document.getElementById('pStock').value) || 0,
+    active:         document.getElementById('pActive').value === '1',
+    badge:          document.getElementById('pBadge').value || null
   };
 
+  const saveBtn = document.querySelector('#productModal .btn-save');
+  if (saveBtn) { saveBtn.textContent = 'Enregistrement…'; saveBtn.disabled = true; }
+
   try {
-    const url = id ? '/api/admin/products/' + id : '/api/admin/products';
+    const url    = id ? '/api/admin/products/' + id : '/api/admin/products';
     const method = id ? 'PUT' : 'POST';
     const res = await fetch(url, { method, headers: authHeaders(), body: JSON.stringify(payload) });
 
@@ -343,11 +506,13 @@ async function saveProduct(e) {
       return;
     }
 
-    showToast(id ? 'Produit mis à jour' : 'Produit créé', 'success');
+    showToast(id ? 'Produit mis à jour ✓' : 'Produit créé ✓', 'success');
     closeProductForm();
     loadAdminProducts();
   } catch {
     showToast('Erreur réseau', 'error');
+  } finally {
+    if (saveBtn) { saveBtn.textContent = 'Enregistrer'; saveBtn.disabled = false; }
   }
 }
 

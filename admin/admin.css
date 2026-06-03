@@ -644,6 +644,109 @@ tr:hover td { background: rgba(245,240,232,0.4); }
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* ===== UPLOAD IMAGES ===== */
+.upload-zone {
+  border: 2px dashed #DDD;
+  border-radius: 12px;
+  padding: 28px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: var(--transition);
+  background: var(--gris-clair);
+}
+
+.upload-zone:hover,
+.upload-zone.dragover {
+  border-color: var(--terracotta);
+  background: rgba(193,68,14,0.04);
+}
+
+.upload-icon { font-size: 32px; display: block; margin-bottom: 8px; }
+
+.upload-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--noir);
+  margin-bottom: 4px;
+}
+
+.upload-hint {
+  font-size: 12px;
+  color: var(--gris);
+}
+
+.images-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.preview-item {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid #EEE;
+  background: var(--gris-clair);
+  flex-shrink: 0;
+}
+
+.preview-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.preview-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.preview-remove:hover { background: #B71C1C; }
+
+.preview-main-badge {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  background: var(--terracotta);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.preview-loading {
+  width: 90px;
+  height: 90px;
+  border-radius: 10px;
+  border: 2px dashed #DDD;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--gris);
+}
+
 /* Switch toggle */
 .toggle-switch {
   position: relative;
