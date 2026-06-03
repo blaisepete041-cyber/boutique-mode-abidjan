@@ -283,16 +283,23 @@ function filterProductsTable(query) {
 // Tableau des images en cours (base64 ou URL)
 let currentImages = [];
 
-// Compresser une image via Canvas — max 900px, qualité 0.82
+// Compresser une image via Canvas — max 800px, qualité 0.75
 function compressImage(file) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const reader = new FileReader();
+
+    reader.onerror = () => reject(new Error('Lecture impossible'));
+
     reader.onload = (e) => {
       const img = new Image();
+
+      img.onerror = () => reject(new Error('Format non supporté (essayez JPG ou PNG)'));
+
       img.onload = () => {
-        const MAX = 900;
+        const MAX = 800;
         let { width, height } = img;
 
+        // Redimensionner si nécessaire
         if (width > MAX || height > MAX) {
           if (width > height) { height = Math.round(height * MAX / width); width = MAX; }
           else { width = Math.round(width * MAX / height); height = MAX; }
@@ -301,11 +308,27 @@ function compressImage(file) {
         const canvas = document.createElement('canvas');
         canvas.width  = width;
         canvas.height = height;
-        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL('image/jpeg', 0.82));
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#FFFFFF'; // fond blanc pour PNG transparents
+        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Compresser jusqu'à ce que ça passe sous 400KB
+        let quality = 0.78;
+        let result  = canvas.toDataURL('image/jpeg', quality);
+
+        // Si encore trop lourd, réduire la qualité
+        while (result.length > 500000 && quality > 0.4) {
+          quality -= 0.08;
+          result = canvas.toDataURL('image/jpeg', quality);
+        }
+
+        resolve(result);
       };
+
       img.src = e.target.result;
     };
+
     reader.readAsDataURL(file);
   });
 }
@@ -323,10 +346,16 @@ async function handleImageFiles(files) {
   toProcess.forEach(() => addLoadingPlaceholder());
 
   for (const file of toProcess) {
-    if (!file.type.startsWith('image/')) continue;
-    if (file.size > 10 * 1024 * 1024) {
-      showToast(file.name + ' est trop lourd (max 10 MB)', 'error');
+    // Vérifier le type — HEIC (iPhone) non supporté par Canvas
+    if (!file.type.startsWith('image/') || file.type === 'image/heic' || file.type === 'image/heif') {
       removeLoadingPlaceholder();
+      showToast('"' + file.name + '" : format non supporté. Convertissez en JPG ou PNG.', 'error');
+      continue;
+    }
+
+    if (file.size > 15 * 1024 * 1024) {
+      removeLoadingPlaceholder();
+      showToast('"' + file.name + '" dépasse 15 MB. Réduisez la taille.', 'error');
       continue;
     }
 
@@ -335,9 +364,9 @@ async function handleImageFiles(files) {
       removeLoadingPlaceholder();
       currentImages.push(base64);
       renderImagePreviews();
-    } catch {
+    } catch (err) {
       removeLoadingPlaceholder();
-      showToast('Erreur lors du traitement de ' + file.name, 'error');
+      showToast('"' + file.name + '" : ' + (err.message || 'Erreur de traitement'), 'error');
     }
   }
 
