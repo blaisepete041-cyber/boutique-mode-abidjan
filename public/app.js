@@ -1,4 +1,4 @@
-/* ============================
+﻿/* ============================
    BOUTIQUE MODE ABIDJAN - app.js
    ============================ */
 
@@ -811,11 +811,11 @@ const INFO_CONTENT = {
             </div>
           </a>
 
-          <a href="mailto:contact@lumiere-afrique.ci" class="contact-card">
+          <a href="mailto:blaisepete041@gmail.com" class="contact-card">
             <div class="contact-card-icon cc-email">✉️</div>
             <div class="contact-card-info">
               <strong>Email</strong>
-              <span>contact@lumiere-afrique.ci</span>
+              <span>blaisepete041@gmail.com</span>
             </div>
           </a>
 
@@ -953,3 +953,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 });
+
