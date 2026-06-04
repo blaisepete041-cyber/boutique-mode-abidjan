@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const compression = require('compression');
 const jwt = require('jsonwebtoken');
 const path = require('path');
 const db = require('./database');
@@ -9,12 +10,18 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middlewares globaux
+app.use(compression());
 app.use(cors());
 app.use(express.json({ limit: '15mb' }));
 app.use(express.urlencoded({ extended: true, limit: '15mb' }));
 
-// Fichiers statiques — admin sans cache pour éviter les problèmes de version
-app.use(express.static(path.join(__dirname, 'public')));
+// Fichiers statiques — 7 jours de cache pour CSS/JS, no-cache pour HTML
+app.use(express.static(path.join(__dirname, 'public'), {
+  maxAge: '7d',
+  setHeaders: (res, filepath) => {
+    if (filepath.endsWith('.html')) res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+  }
+}));
 app.use('/admin', express.static(path.join(__dirname, 'admin'), {
   setHeaders: (res) => {
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate');
@@ -304,6 +311,74 @@ app.put('/api/admin/orders/:id/status', (req, res) => {
 
     db.prepare('UPDATE orders SET status = ? WHERE id = ?').run(status, req.params.id);
     res.json({ message: 'Statut mis à jour', status });
+  } catch (err) {
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// ===== AVIS CLIENTS =====
+app.get('/api/products/:id/reviews', (req, res) => {
+  try {
+    const reviews = db.prepare('SELECT * FROM reviews WHERE product_id = ? ORDER BY created_at DESC LIMIT 20').all(req.params.id);
+    const agg = db.prepare('SELECT ROUND(AVG(rating), 1) as avg, COUNT(*) as count FROM reviews WHERE product_id = ?').get(req.params.id);
+    res.json({ reviews, average: agg.avg, count: agg.count });
+  } catch (err) {
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+app.post('/api/products/:id/reviews', (req, res) => {
+  try {
+    const product = db.prepare('SELECT id FROM products WHERE id = ? AND active = 1').get(req.params.id);
+    if (!product) return res.status(404).json({ error: 'Produit introuvable' });
+
+    const { customer_name, rating, comment } = req.body;
+    if (!customer_name || !rating || rating < 1 || rating > 5) {
+      return res.status(400).json({ error: 'Nom et note (1-5) requis' });
+    }
+    db.prepare('INSERT INTO reviews (product_id, customer_name, rating, comment) VALUES (?, ?, ?, ?)')
+      .run(req.params.id, String(customer_name).slice(0, 80), parseInt(rating), comment ? String(comment).slice(0, 500) : null);
+    res.status(201).json({ message: 'Avis publié' });
+  } catch (err) {
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// ===== EXPORT CSV COMMANDES (admin) =====
+app.get('/api/admin/orders/export', authMiddleware, (req, res) => {
+  try {
+    const orders = db.prepare('SELECT * FROM orders ORDER BY created_at DESC').all();
+    const headers = ['ID', 'Date', 'Client', 'Téléphone', 'Quartier', 'Adresse', 'Sous-total', 'Livraison', 'Réduction', 'Total', 'Code Promo', 'Statut'];
+    const rows = orders.map(o => [
+      o.id,
+      new Date(o.created_at).toLocaleDateString('fr-FR'),
+      o.customer_name,
+      o.customer_phone,
+      o.district,
+      o.address,
+      o.subtotal,
+      o.delivery_fee,
+      o.discount,
+      o.total,
+      o.promo_code || '',
+      o.status
+    ].map(v => '"' + String(v).replace(/"/g, '""') + '"').join(';'));
+    const csv = [headers.map(h => '"' + h + '"').join(';'), ...rows].join('\r\n');
+    const filename = `commandes-${new Date().toISOString().split('T')[0]}.csv`;
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.send('﻿' + csv);
+  } catch (err) {
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// ===== ALERTES STOCK + COMMANDES EN ATTENTE (admin) =====
+app.get('/api/admin/alerts', authMiddleware, (req, res) => {
+  try {
+    const lowStock = db.prepare('SELECT id, name, stock, category FROM products WHERE stock <= 5 AND active = 1 ORDER BY stock ASC LIMIT 10').all();
+    const pendingCount = db.prepare("SELECT COUNT(*) as count FROM orders WHERE status = 'En attente'").get().count;
+    res.json({ low_stock: lowStock, pending_orders: pendingCount });
   } catch (err) {
     res.status(500).json({ error: 'Erreur serveur' });
   }

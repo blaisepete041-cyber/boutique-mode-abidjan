@@ -136,9 +136,12 @@ function toggleSidebar() {
 // ===== DASHBOARD =====
 async function loadDashboard() {
   try {
-    const res = await fetch('/api/admin/stats', { headers: authHeaders() });
-    if (res.status === 401) { logout(); return; }
-    const data = await res.json();
+    const [statsRes, alertsRes] = await Promise.all([
+      fetch('/api/admin/stats', { headers: authHeaders() }),
+      fetch('/api/admin/alerts', { headers: authHeaders() })
+    ]);
+    if (statsRes.status === 401) { logout(); return; }
+    const data = await statsRes.json();
 
     document.getElementById('statOrders').textContent = data.total_orders;
     document.getElementById('statRevenue').textContent = fmt(data.today_revenue);
@@ -147,10 +150,47 @@ async function loadDashboard() {
 
     renderOrdersChart(data.last_7_days);
     renderRecentOrders(data.recent_orders);
+
+    if (alertsRes.ok) {
+      const alerts = await alertsRes.json();
+      renderAlerts(alerts);
+    }
   } catch (err) {
     console.error(err);
     showToast('Erreur de chargement', 'error');
   }
+}
+
+function renderAlerts(data) {
+  const card = document.getElementById('alertsCard');
+  const list = document.getElementById('alertsList');
+  const count = document.getElementById('alertsCount');
+  const badge = document.getElementById('pendingBadge');
+
+  if (badge) {
+    badge.textContent = data.pending_orders;
+    badge.style.display = data.pending_orders > 0 ? 'inline-flex' : 'none';
+  }
+
+  if (!card || !list) return;
+  if (!data.low_stock || data.low_stock.length === 0) { card.style.display = 'none'; return; }
+
+  card.style.display = 'block';
+  if (count) count.textContent = data.low_stock.length + ' produit(s) concerné(s)';
+  list.innerHTML = data.low_stock.map(p => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F0EDE8;">
+      <div>
+        <span style="font-weight:600;font-size:13px;">${escHtml(p.name)}</span>
+        <span style="font-size:11px;color:#888;margin-left:8px;">${escHtml(p.category)}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:13px;font-weight:700;color:${p.stock === 0 ? '#C62828' : '#E65100'};">
+          ${p.stock === 0 ? '🔴 Rupture' : '🟡 Stock: ' + p.stock}
+        </span>
+        <button class="btn-action btn-edit" onclick="showPage('products'); setTimeout(() => openProductForm(${p.id}), 300);" style="padding:4px 10px;font-size:11px;">Modifier</button>
+      </div>
+    </div>
+  `).join('');
 }
 
 function renderOrdersChart(data) {
@@ -740,6 +780,26 @@ async function togglePromo(id) {
     }
   } catch {
     showToast('Erreur réseau', 'error');
+  }
+}
+
+// ===== EXPORT CSV COMMANDES =====
+async function exportOrders() {
+  try {
+    const res = await fetch('/api/admin/orders/export', { headers: authHeaders() });
+    if (!res.ok) { showToast('Erreur export', 'error'); return; }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'commandes-' + new Date().toISOString().split('T')[0] + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('Export CSV téléchargé ✓', 'success');
+  } catch {
+    showToast('Erreur lors de l\'export', 'error');
   }
 }
 

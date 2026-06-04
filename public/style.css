@@ -1743,3 +1743,306 @@ footer {
     grid-template-columns: 2fr 1fr 1fr 1fr;
   }
 }
+
+/* ===== PROMO BANNER ANIMATION ===== */
+.promo-banner {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.promo-banner-track {
+  display: inline-block;
+  animation: marquee 28s linear infinite;
+  white-space: nowrap;
+}
+
+.promo-banner:hover .promo-banner-track {
+  animation-play-state: paused;
+}
+
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ===== WISHLIST HEADER BUTTON ===== */
+.btn-wishlist-header {
+  position: relative;
+  background: none;
+  color: rgba(255,255,255,0.75);
+  font-size: 20px;
+  padding: 6px 4px;
+  display: flex;
+  align-items: center;
+  transition: var(--transition);
+  line-height: 1;
+}
+
+.btn-wishlist-header:hover { color: var(--or); }
+
+.wishlist-count {
+  position: absolute;
+  top: -2px;
+  right: -4px;
+  background: #E53935;
+  color: #fff;
+  border-radius: 50%;
+  width: 17px;
+  height: 17px;
+  font-size: 9px;
+  font-weight: 700;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===== SKELETON LOADING ===== */
+.skeleton-card {
+  background: var(--blanc);
+  border-radius: var(--rayon);
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #f0eef6 25%, #e5e0f0 50%, #f0eef6 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 4px;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeleton-img { aspect-ratio: 3/4; border-radius: 0; }
+.skeleton-text { height: 11px; margin: 10px 14px 4px; }
+.skeleton-text.w60 { width: 60%; }
+.skeleton-text.w80 { height: 15px; width: 80%; }
+.skeleton-text.w100 { width: calc(100% - 28px); }
+.skeleton-btn { height: 36px; margin: 12px 14px 16px; border-radius: 8px; }
+
+/* ===== BACK TO TOP ===== */
+.btn-back-top {
+  position: fixed;
+  bottom: 24px;
+  left: 16px;
+  width: 44px;
+  height: 44px;
+  background: var(--terracotta);
+  color: var(--blanc);
+  border-radius: 50%;
+  font-size: 20px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(107,33,168,0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 8000;
+  transform: translateY(10px);
+}
+
+.btn-back-top.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.btn-back-top:hover {
+  background: #581C87;
+  transform: translateY(-3px);
+}
+
+/* ===== CART BADGE BOUNCE ===== */
+@keyframes badgePop {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.6); }
+  65%  { transform: scale(0.88); }
+  100% { transform: scale(1); }
+}
+
+.cart-count.pop { animation: badgePop 0.38s ease; }
+
+/* ===== SHARE + MODAL ACTIONS ===== */
+.modal-actions-row {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.modal-actions-row .btn-add-to-cart-modal {
+  flex: 1;
+}
+
+.btn-share-product {
+  background: var(--gris-clair);
+  border: 1.5px solid #DDD;
+  color: #555;
+  width: 52px;
+  border-radius: 12px;
+  font-size: 20px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.btn-share-product:hover {
+  border-color: var(--terracotta);
+  background: rgba(107,33,168,0.06);
+}
+
+/* ===== AVIS CLIENTS ===== */
+.reviews-section {
+  padding: 0 20px 28px;
+  border-top: 1px solid #EEE;
+}
+
+.reviews-section h3 {
+  font-size: 18px;
+  margin: 20px 0 14px;
+}
+
+.reviews-summary {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  background: var(--gris-clair);
+  border-radius: 12px;
+}
+
+.reviews-avg {
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--noir);
+  font-family: 'Playfair Display', serif;
+  line-height: 1;
+}
+
+.reviews-stars {
+  color: #FFB300;
+  font-size: 20px;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.reviews-count {
+  font-size: 12px;
+  color: var(--gris);
+}
+
+.review-item {
+  padding: 13px 0;
+  border-bottom: 1px solid #F0EDE8;
+}
+
+.review-item:last-child { border-bottom: none; }
+
+.review-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.review-author {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.review-rating {
+  color: #FFB300;
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+.review-comment {
+  font-size: 13px;
+  color: #555;
+  line-height: 1.65;
+  margin-bottom: 4px;
+}
+
+.review-date {
+  font-size: 11px;
+  color: var(--gris);
+}
+
+.reviews-empty {
+  text-align: center;
+  padding: 20px;
+  color: var(--gris);
+  font-size: 13px;
+  font-style: italic;
+}
+
+.review-form-wrapper {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #EEE;
+}
+
+.review-form-wrapper h4 {
+  font-size: 15px;
+  font-family: 'Inter', sans-serif;
+  margin-bottom: 12px;
+}
+
+.review-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.review-form input,
+.review-form textarea {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1.5px solid #DDD;
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+  resize: vertical;
+  transition: var(--transition);
+  background: var(--blanc);
+}
+
+.review-form input:focus,
+.review-form textarea:focus { border-color: var(--terracotta); }
+
+.star-rating-input {
+  display: flex;
+  gap: 4px;
+  padding: 4px 0;
+}
+
+.star-rating-input span {
+  font-size: 30px;
+  color: #DDD;
+  cursor: pointer;
+  transition: color 0.15s ease, transform 0.15s ease;
+  line-height: 1;
+}
+
+.star-rating-input span:hover,
+.star-rating-input span.active { color: #FFB300; transform: scale(1.15); }
+
+.btn-submit-review {
+  padding: 10px 22px;
+  background: var(--terracotta);
+  color: var(--blanc);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: var(--transition);
+  align-self: flex-start;
+}
+
+.btn-submit-review:hover { background: #581C87; }

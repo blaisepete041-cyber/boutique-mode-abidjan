@@ -16,6 +16,11 @@ let selectedColor = '';
 let modalQty = 1;
 let selectedPayment = 'wave';
 
+// Wishlist persistante
+let wishlistIds = new Set(JSON.parse(localStorage.getItem('wishlist') || '[]'));
+// Note & avis
+let currentReviewRating = 0;
+
 const PAYMENT_LABELS = {
   wave:      'Wave CI',
   orange:    'Orange Money',
@@ -35,9 +40,29 @@ function formatPrice(amount) {
   return new Intl.NumberFormat('fr-FR').format(amount) + ' FCFA';
 }
 
+// ===== SKELETON LOADING =====
+function renderSkeletons(count = 8) {
+  const grid = document.getElementById('productsGrid');
+  const loader = document.getElementById('loader');
+  grid.innerHTML = '';
+  grid.appendChild(loader);
+  for (let i = 0; i < count; i++) {
+    const div = document.createElement('div');
+    div.className = 'skeleton-card';
+    div.innerHTML = `
+      <div class="skeleton skeleton-img"></div>
+      <div class="skeleton skeleton-text w60"></div>
+      <div class="skeleton skeleton-text w80"></div>
+      <div class="skeleton skeleton-text w100"></div>
+      <div class="skeleton skeleton-btn"></div>
+    `;
+    grid.appendChild(div);
+  }
+}
+
 // ===== CHARGEMENT DES PRODUITS =====
 async function loadProducts() {
-  showLoader(true);
+  renderSkeletons(8);
   try {
     const params = new URLSearchParams();
     if (currentFilter !== 'Tous') params.set('category', currentFilter);
@@ -51,18 +76,13 @@ async function loadProducts() {
   } catch (err) {
     console.error(err);
     showToast('Erreur lors du chargement des produits', 'error');
-  } finally {
-    showLoader(false);
   }
 }
 
 function showLoader(show) {
   const loader = document.getElementById('loader');
-  if (show) {
-    loader.classList.add('active');
-  } else {
-    loader.classList.remove('active');
-  }
+  if (show) loader.classList.add('active');
+  else loader.classList.remove('active');
 }
 
 // ===== RENDU DES PRODUITS =====
@@ -112,12 +132,13 @@ function createProductCard(product, index) {
   const discount = product.original_price
     ? Math.round((1 - product.price / product.original_price) * 100)
     : 0;
+  const inWishlist = wishlistIds.has(product.id);
 
   div.innerHTML = `
     <div class="product-card-image" onclick="openProductModal(${product.id})">
       <img src="${img}" alt="${escapeHtml(product.name)}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400'">
       ${product.badge ? `<div class="product-badge"><span class="badge badge-${product.badge.toLowerCase()}">${product.badge}</span></div>` : ''}
-      <button class="btn-wishlist" onclick="event.stopPropagation(); toggleWishlist(this)" title="Favoris">🤍</button>
+      <button class="btn-wishlist${inWishlist ? ' active' : ''}" data-product-id="${product.id}" onclick="event.stopPropagation(); toggleWishlist(this)" title="Favoris">${inWishlist ? '❤️' : '🤍'}</button>
     </div>
     <div class="product-card-body">
       <p class="product-category">${escapeHtml(product.category)}</p>
@@ -179,6 +200,10 @@ async function openProductModal(productId) {
     modalQty = 1;
 
     fillProductModal(data.product, data.similar);
+    currentReviewRating = 0;
+    document.querySelectorAll('#starRatingInput span').forEach(s => s.classList.remove('active'));
+    if (document.getElementById('reviewForm')) document.getElementById('reviewForm').reset();
+    loadReviews(data.product.id);
 
     document.getElementById('productModal').classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -369,11 +394,20 @@ function saveCart() {
 }
 
 function updateCartUI() {
+  const countEl = document.getElementById('cartCount');
+  const prevCount = parseInt(countEl.textContent) || 0;
   const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
-  document.getElementById('cartCount').textContent = totalItems;
+  countEl.textContent = totalItems;
+  if (totalItems > prevCount) {
+    countEl.classList.remove('pop');
+    void countEl.offsetWidth;
+    countEl.classList.add('pop');
+    setTimeout(() => countEl.classList.remove('pop'), 380);
+  }
   document.getElementById('cartItemsCount').textContent =
     totalItems + (totalItems > 1 ? ' articles' : ' article');
   updateCartTotals();
+  updateWishlistUI();
 }
 
 function updateCartTotals() {
@@ -867,10 +901,82 @@ function selectPayment(type) {
   if (instr) instr.textContent = PAYMENT_INSTRUCTIONS[type] || '';
 }
 
-// ===== WISHLIST =====
+// ===== WISHLIST PERSISTANTE =====
+function updateWishlistUI() {
+  const count = wishlistIds.size;
+  const countEl = document.getElementById('wishlistCount');
+  if (countEl) {
+    countEl.textContent = count;
+    countEl.style.display = count > 0 ? 'flex' : 'none';
+  }
+}
+
 function toggleWishlist(btn) {
-  btn.classList.toggle('active');
-  btn.textContent = btn.classList.contains('active') ? '❤️' : '🤍';
+  const productId = parseInt(btn.dataset.productId);
+  if (!productId) return;
+
+  if (wishlistIds.has(productId)) {
+    wishlistIds.delete(productId);
+    btn.textContent = '🤍';
+    btn.classList.remove('active');
+  } else {
+    wishlistIds.add(productId);
+    btn.textContent = '❤️';
+    btn.classList.add('active');
+    showToast('Ajouté aux favoris ❤️', 'success');
+  }
+  localStorage.setItem('wishlist', JSON.stringify([...wishlistIds]));
+  updateWishlistUI();
+}
+
+function openWishlistPage() {
+  const favs = allProducts.filter(p => wishlistIds.has(p.id));
+  if (favs.length === 0) {
+    showToast('Votre liste de favoris est vide', 'error');
+    return;
+  }
+  // Filtrer vers les favoris en appliquant un filtre virtuel
+  const grid = document.getElementById('productsGrid');
+  const count = document.getElementById('productsCount');
+  count.textContent = favs.length + (favs.length > 1 ? ' favoris' : ' favori');
+  const loader = document.getElementById('loader');
+  grid.innerHTML = '';
+  grid.appendChild(loader);
+  favs.forEach((p, i) => {
+    const card = createProductCard(p, i);
+    grid.appendChild(card);
+  });
+  setTimeout(() => {
+    grid.querySelectorAll('.fade-in').forEach((c, i) => {
+      setTimeout(() => c.classList.add('visible'), i * 60);
+    });
+  }, 50);
+  document.getElementById('catalogue').scrollIntoView({ behavior: 'smooth' });
+  // Déselectionner les filtres
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  showToast('Affichage de vos ' + favs.length + ' favoris', 'success');
+}
+
+// ===== PARTAGE PRODUIT =====
+function shareProduct() {
+  if (!currentProduct) return;
+  const url = window.location.origin + '/';
+  const text = currentProduct.name + ' — ' + formatPrice(currentProduct.price) + '\nBoutique Lumière d\'Afrique · Abidjan';
+  if (navigator.share) {
+    navigator.share({ title: currentProduct.name, text, url }).catch(() => {});
+    return;
+  }
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text + '\n' + url).then(() => {
+      showToast('Lien copié dans le presse-papier 📋', 'success');
+    }).catch(() => openWhatsAppShare(text, url));
+  } else {
+    openWhatsAppShare(text, url);
+  }
+}
+
+function openWhatsAppShare(text, url) {
+  window.open('https://wa.me/?text=' + encodeURIComponent(text + '\n' + url), '_blank');
 }
 
 // ===== TOAST NOTIFICATIONS =====
@@ -914,6 +1020,118 @@ function initScrollAnimations() {
   document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 }
 
+// ===== AVIS CLIENTS =====
+async function loadReviews(productId) {
+  const list = document.getElementById('reviewsList');
+  const summary = document.getElementById('reviewsSummary');
+  if (list) list.innerHTML = '<p class="reviews-empty">Chargement des avis…</p>';
+  if (summary) summary.innerHTML = '';
+  try {
+    const res = await fetch('/api/products/' + productId + '/reviews');
+    const data = await res.json();
+    renderReviews(data);
+  } catch {
+    if (list) list.innerHTML = '<p class="reviews-empty">Impossible de charger les avis.</p>';
+  }
+}
+
+function renderReviews(data) {
+  const summary = document.getElementById('reviewsSummary');
+  const list = document.getElementById('reviewsList');
+  if (!list) return;
+
+  if (!data.count || data.count === 0) {
+    if (summary) summary.innerHTML = '';
+    list.innerHTML = '<p class="reviews-empty">Aucun avis pour le moment. Soyez le premier !</p>';
+    return;
+  }
+
+  const rounded = Math.round(data.average);
+  const stars = '★'.repeat(rounded) + '☆'.repeat(5 - rounded);
+  if (summary) {
+    summary.innerHTML = `
+      <span class="reviews-avg">${data.average}</span>
+      <div>
+        <div class="reviews-stars">${stars}</div>
+        <div class="reviews-count">${data.count} avis</div>
+      </div>
+    `;
+  }
+
+  list.innerHTML = data.reviews.map(r => `
+    <div class="review-item">
+      <div class="review-header">
+        <span class="review-author">${escapeHtml(r.customer_name)}</span>
+        <span class="review-rating">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
+      </div>
+      ${r.comment ? `<p class="review-comment">${escapeHtml(r.comment)}</p>` : ''}
+      <p class="review-date">${new Date(r.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+    </div>
+  `).join('');
+}
+
+function setReviewRating(rating) {
+  currentReviewRating = rating;
+  document.querySelectorAll('#starRatingInput span').forEach((s, i) => {
+    s.classList.toggle('active', i < rating);
+  });
+}
+
+async function submitReview(e) {
+  e.preventDefault();
+  if (!currentProduct) return;
+  const name = document.getElementById('reviewName').value.trim();
+  const comment = document.getElementById('reviewComment').value.trim();
+  if (!name) { showToast('Indiquez votre prénom', 'error'); return; }
+  if (!currentReviewRating) { showToast('Choisissez une note (étoiles)', 'error'); return; }
+
+  const btn = e.target.querySelector('.btn-submit-review');
+  btn.textContent = 'Publication…';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('/api/products/' + currentProduct.id + '/reviews', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ customer_name: name, rating: currentReviewRating, comment })
+    });
+    if (res.ok) {
+      showToast('Avis publié ! Merci 🙏', 'success');
+      document.getElementById('reviewForm').reset();
+      currentReviewRating = 0;
+      document.querySelectorAll('#starRatingInput span').forEach(s => s.classList.remove('active'));
+      loadReviews(currentProduct.id);
+    } else {
+      showToast('Erreur lors de la publication', 'error');
+    }
+  } catch {
+    showToast('Erreur réseau', 'error');
+  } finally {
+    btn.textContent = 'Publier mon avis';
+    btn.disabled = false;
+  }
+}
+
+// Init interactions des étoiles
+function initStarRating() {
+  const stars = document.querySelectorAll('#starRatingInput span');
+  stars.forEach(star => {
+    star.addEventListener('click', () => setReviewRating(parseInt(star.dataset.star)));
+    star.addEventListener('mouseenter', () => {
+      const val = parseInt(star.dataset.star);
+      stars.forEach((s, i) => s.classList.toggle('active', i < val));
+    });
+    star.addEventListener('mouseleave', () => {
+      stars.forEach((s, i) => s.classList.toggle('active', i < currentReviewRating));
+    });
+  });
+}
+
+// ===== BACK TO TOP =====
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 // ===== INITIALISATION =====
 document.addEventListener('DOMContentLoaded', async () => {
   // Charger le numéro WhatsApp depuis la config serveur
@@ -926,8 +1144,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   loadProducts();
   updateCartUI();
+  initStarRating();
 
-  // Scroll observer
+  // Back to top — apparaît après 400px de scroll
+  window.addEventListener('scroll', () => {
+    const btn = document.getElementById('btnBackTop');
+    if (btn) btn.classList.toggle('visible', window.scrollY > 400);
+  }, { passive: true });
+
+  // Scroll observer pour les cartes produits
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (e.isIntersecting) {
@@ -937,12 +1162,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }, { threshold: 0.08 });
 
-  // Réobserver quand de nouveaux éléments apparaissent
   new MutationObserver(() => {
     document.querySelectorAll('.fade-in:not(.visible)').forEach(el => observer.observe(el));
   }).observe(document.getElementById('productsGrid'), { childList: true });
 
-  // Fermer la modale avec Escape
+  // Fermer les modales avec Escape
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       closeProductModal();
