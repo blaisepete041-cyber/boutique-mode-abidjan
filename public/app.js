@@ -40,6 +40,92 @@ function formatPrice(amount) {
   return new Intl.NumberFormat('fr-FR').format(amount) + ' FCFA';
 }
 
+// ===== VITRINE DÉFILANTE =====
+async function loadVitrine() {
+  const track = document.getElementById('vitrineTrack');
+  if (!track) return;
+
+  try {
+    // Charger les nouveautés + bestsellers pour la vitrine
+    const [nouveautes, bestsellers] = await Promise.all([
+      fetch('/api/products?sort=nouveautes').then(r => r.json()),
+      fetch('/api/products?sort=popularite').then(r => r.json())
+    ]);
+
+    // Fusionner + dédupliquer, max 10 produits
+    const seen = new Set();
+    const products = [];
+    for (const p of [...nouveautes, ...bestsellers]) {
+      if (!seen.has(p.id) && products.length < 10) {
+        seen.add(p.id);
+        products.push(p);
+      }
+    }
+    if (products.length < 2) { document.querySelector('.vitrine-section').style.display = 'none'; return; }
+
+    // Doubler les cartes pour l'effet boucle infinie
+    const cards = [...products, ...products].map(p => buildVitrineCard(p)).join('');
+    track.innerHTML = cards;
+
+    // Drag-to-scroll (touch + souris)
+    initVitrineDrag();
+  } catch {
+    document.querySelector('.vitrine-section').style.display = 'none';
+  }
+}
+
+function buildVitrineCard(product) {
+  const img = product.images && product.images.length > 0 ? product.images[0] : 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400';
+  const oldPrice = product.original_price
+    ? `<span class="vitrine-card-price-old">${formatPrice(product.original_price)}</span>` : '';
+  return `
+    <div class="vitrine-card" onclick="openProductModal(${product.id})">
+      <img class="vitrine-card-img" src="${img}" alt="${escapeHtml(product.name)}" loading="lazy"
+           onerror="this.src='https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400'">
+      <div class="vitrine-card-body">
+        <p class="vitrine-card-cat">${escapeHtml(product.category)}</p>
+        <p class="vitrine-card-name">${escapeHtml(product.name)}</p>
+        <span class="vitrine-card-price">${formatPrice(product.price)}</span>${oldPrice}
+      </div>
+    </div>
+  `;
+}
+
+function initVitrineDrag() {
+  const wrapper = document.getElementById('vitrineWrapper');
+  const track   = document.getElementById('vitrineTrack');
+  if (!wrapper || !track) return;
+
+  let isDragging = false;
+  let startX = 0;
+  let scrollLeft = 0;
+
+  const start = (x) => {
+    isDragging = true;
+    startX = x - wrapper.offsetLeft;
+    scrollLeft = wrapper.scrollLeft;
+    track.style.animationPlayState = 'paused';
+  };
+  const stop = () => {
+    isDragging = false;
+    track.style.animationPlayState = '';
+  };
+  const move = (x) => {
+    if (!isDragging) return;
+    const walk = (x - wrapper.offsetLeft - startX) * 1.2;
+    wrapper.scrollLeft = scrollLeft - walk;
+  };
+
+  wrapper.addEventListener('mousedown',  e => start(e.pageX));
+  wrapper.addEventListener('mouseleave', stop);
+  wrapper.addEventListener('mouseup',    stop);
+  wrapper.addEventListener('mousemove',  e => { e.preventDefault(); move(e.pageX); });
+
+  wrapper.addEventListener('touchstart', e => start(e.touches[0].pageX), { passive: true });
+  wrapper.addEventListener('touchend',   stop);
+  wrapper.addEventListener('touchmove',  e => move(e.touches[0].pageX), { passive: true });
+}
+
 // ===== SKELETON LOADING =====
 function renderSkeletons(count = 8) {
   const grid = document.getElementById('productsGrid');
@@ -1143,6 +1229,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   loadProducts();
+  loadVitrine();
   updateCartUI();
   initStarRating();
 

@@ -1744,6 +1744,128 @@ footer {
   }
 }
 
+/* ===== VITRINE DÉFILANTE ===== */
+.vitrine-section {
+  background: var(--noir);
+  padding: 40px 0 44px;
+  overflow: hidden;
+}
+
+.vitrine-header {
+  text-align: center;
+  margin-bottom: 28px;
+  padding: 0 16px;
+}
+
+.vitrine-label {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--or);
+  margin-bottom: 8px;
+}
+
+.vitrine-title {
+  font-size: clamp(22px, 4vw, 34px);
+  color: var(--blanc);
+}
+
+.vitrine-wrapper {
+  overflow: hidden;
+  cursor: grab;
+  user-select: none;
+}
+
+.vitrine-wrapper:active { cursor: grabbing; }
+
+/* Pause l'animation au survol */
+.vitrine-wrapper:hover .vitrine-track {
+  animation-play-state: paused;
+}
+
+.vitrine-track {
+  display: flex;
+  gap: 18px;
+  width: max-content;
+  animation: scrollVitrine 32s linear infinite;
+  padding: 4px 0 8px;
+}
+
+@keyframes scrollVitrine {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.vitrine-card {
+  flex-shrink: 0;
+  width: 180px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: transform 0.3s ease, border-color 0.3s ease;
+  cursor: pointer;
+}
+
+.vitrine-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(212,175,55,0.4);
+}
+
+.vitrine-card-img {
+  width: 100%;
+  aspect-ratio: 3/4;
+  object-fit: cover;
+  display: block;
+  background: rgba(255,255,255,0.04);
+}
+
+.vitrine-card-body {
+  padding: 10px 12px 14px;
+}
+
+.vitrine-card-cat {
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--or);
+  margin-bottom: 4px;
+}
+
+.vitrine-card-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 13px;
+  color: var(--blanc);
+  line-height: 1.3;
+  margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vitrine-card-price {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--or);
+}
+
+.vitrine-card-price-old {
+  font-size: 11px;
+  color: rgba(255,255,255,0.35);
+  text-decoration: line-through;
+  margin-left: 6px;
+}
+
+@media (min-width: 640px) {
+  .vitrine-card { width: 210px; }
+}
+
+@media (min-width: 1024px) {
+  .vitrine-card { width: 230px; }
+  .vitrine-track { gap: 22px; }
+}
+
 /* ===== PROMO BANNER ANIMATION ===== */
 .promo-banner {
   overflow: hidden;
