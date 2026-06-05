@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://boutique-mode-abidjan-production.up.railway.app/sitemap.xml
